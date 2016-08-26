@@ -2,7 +2,7 @@
   "name": "vue-bootstrap",
   "version": "0.1.0",
   "description": "Bootstrap 4 components built with Vue",
-  "main": "index.js",
+  "main": "dist/vue-bootstrap.js",
   "scripts": {
     "build": "node build/build.js",
     "dev": "node build/dev-server.js",
