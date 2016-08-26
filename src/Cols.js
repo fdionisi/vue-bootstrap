@@ -50,7 +50,7 @@ export default {
             const classes = []
             const elementProps = this.$options.props
             DEVICE_SIZES.forEach(size => {
-                function popProp(propSuffix, modifier) {
+                const popProp = (propSuffix, modifier) => {
                     const propName = `${size}${propSuffix}`
                     const propValue = this[propName]
 

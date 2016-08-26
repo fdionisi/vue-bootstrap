@@ -738,17 +738,19 @@
         },
         computed: {
             className: function className() {
+                var _this = this;
+
                 var classes = [];
                 var elementProps = this.$options.props;
                 DEVICE_SIZES.forEach(function (size) {
-                    function popProp(propSuffix, modifier) {
+                    var popProp = function popProp(propSuffix, modifier) {
                         var propName = '' + size + propSuffix;
-                        var propValue = this[propName];
+                        var propValue = _this[propName];
 
                         if (propValue) classes.push('col-' + size + modifier + '-' + propValue);
 
                         delete elementProps[propName];
-                    }
+                    };
 
                     popProp('', '');
                     popProp('Offset', '-offset');
