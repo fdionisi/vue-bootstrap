@@ -56,8 +56,6 @@ export default {
 
                     if (propValue)
                         classes.push(`col-${size}${modifier}-${propValue}`)
-
-                    delete elementProps[propName]
                 }
 
                 popProp('', '')

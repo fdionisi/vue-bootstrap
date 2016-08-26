@@ -748,8 +748,6 @@
                         var propValue = _this[propName];
 
                         if (propValue) classes.push('col-' + size + modifier + '-' + propValue);
-
-                        delete elementProps[propName];
                     };
 
                     popProp('', '');
