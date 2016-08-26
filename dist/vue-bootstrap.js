@@ -696,8 +696,8 @@
 
     var DEVICE_SIZES = ['lg', 'md', 'sm', 'xs'];
 
-    var Col = {
-        name: 'col',
+    var Cols = {
+        name: 'cols',
         props: {
             tag: {
                 type: String,
@@ -950,7 +950,7 @@
     exports.BtnGroup = BtnGroup;
     exports.BtnDropdown = BtnDropdown;
     exports.BtnToolbar = BtnToolbar;
-    exports.Col = Col;
+    exports.Cols = Cols;
     exports.DropdownMenu = DropdownMenu;
     exports.FormControl = FormControl;
 

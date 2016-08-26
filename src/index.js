@@ -3,7 +3,7 @@ import Btn from './Btn'
 import BtnGroup from './BtnGroup'
 import BtnDropdown from './BtnDropdown'
 import BtnToolbar from './BtnToolbar'
-import Col from './Col'
+import Cols from './Cols'
 import DropdownMenu from './DropdownMenu'
 import FormControl from './FormControl'
 
@@ -13,7 +13,7 @@ export {
 	BtnGroup,
 	BtnDropdown,
 	BtnToolbar,
-    Col,
+    Cols,
 	DropdownMenu,
 	FormControl
 }

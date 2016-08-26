@@ -6,7 +6,7 @@ const DEVICE_SIZES = [
 ]
 
 export default {
-    name: 'col',
+    name: 'cols',
     props: {
         tag: {
             type: String,
