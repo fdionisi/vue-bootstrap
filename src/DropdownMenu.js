@@ -5,6 +5,7 @@ function findParent(target, el={}) {
 }
 
 export default {
+    name: 'dropdown-menu',
     props: {
         options: {
             type: Array,
