@@ -758,9 +758,7 @@
                     popProp('Pull', '-pull');
 
                     var hiddenPropName = size + 'Hidden';
-                    if (elementProps[hiddenPropName]) classes.push('hidden-' + size);
-
-                    delete elementProps[hiddenPropName];
+                    if (_this[hiddenPropName]) classes.push('hidden-' + size);
                 });
 
                 return classes;
