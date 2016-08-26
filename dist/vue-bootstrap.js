@@ -743,9 +743,9 @@
                 DEVICE_SIZES.forEach(function (size) {
                     function popProp(propSuffix, modifier) {
                         var propName = '' + size + propSuffix;
-                        var propValue = elementProps[propName];
+                        var propValue = this[propName];
 
-                        if (propValue !== null) classes.push('col-' + size + modifier + '-' + propValue);
+                        if (propValue) classes.push('col-' + size + modifier + '-' + propValue);
 
                         delete elementProps[propName];
                     }
