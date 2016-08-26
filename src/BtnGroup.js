@@ -66,7 +66,7 @@ export default {
         },
         _renderDropdown(h, { title, text, options }) {
             // return wrapper w/ child dropdown component
-            return <BtnGroup
+            return <btn-group
                 prop-callback={this.trigger}
                 prop-title={title}
                 prop-text={text}

@@ -11,7 +11,7 @@
     </div>
 
     <script type="text/javascript">
-        console.log(var componentsName = Object.keys(VueBootstrap));
+        console.log(Object.keys(VueBootstrap));
         var componentsName = Object.keys(VueBootstrap);
         for (var i = 0; i < componentsName.length; i++) {
             var name = componentsName[i]
@@ -187,7 +187,7 @@
                     <p>Bootstrap’s form controls expand on <a href="/content/reboot/#forms">our Rebooted form styles</a> with classes. Use these classes to opt into their customized displays for a more consistent rendering across browsers and devices. The example form below demonstrates common HTML form elements that receive updated styles from Bootstrap with additional classes.</p>
                     <p>Remember, since Bootstrap utilizes the HTML5 doctype, <strong>all inputs must have a <code class="highlighter-rouge">type</code> attribute</strong>.</p>
                     <div class="bd-example">
-                        <form-control :type="'email'" :title="'Email address'" :placeholder="'Enter email'" :note="'We will never share your email w ith anyone els e.'"></form-control>
+                        <form-control v-model="vModel" :type="'email'" :title="'Email address'" :placeholder="'Enter email'" :note="'We will never share your email w ith anyone els e.'"></form-control>
                         <form-control :type="'password'" :title="'Password'" :placeholder="'Password'"></form-control>
                         <form-control :type="'select'" :title="'Example select'" :options="selectOptions"></form-control>
                         <form-control :type="'select'" :multiple="true" :title="'Example multiple select'" :options="selectOptions"></form-control>
@@ -195,6 +195,11 @@
                     </div>
                 </div>
             `,
+            data() {
+                return {
+                    vModel: null
+                }
+            },
             methods: {
                 noop: () => null,
                 log(ev) {

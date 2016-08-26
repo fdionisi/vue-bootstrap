@@ -47,40 +47,46 @@ export default {
         }
     },
     methods: {
-        _renderSplitted(h) {
+        _renderSplitted() {
+            const h = this.$createElement
             return [
                 <Btn
                     on-click={this.btnClick}
-                    prop-variant={this.variant}
-                    prop-size={this.size}>
+                    variant={this.variant}
+                    size={this.size}>
+                    { this.$slots.default }
                     { this.text }
                 </Btn>,
-                this._renderButton(h, this.toggle, <span class="sr-only">Toggle Dropdown</span>)
+                this._renderButton(this.toggle, <span class="sr-only">Toggle Dropdown</span>)
             ]
         },
-        _renderButton(h, event, children) {
+        _renderButton(event, children) {
+            const h = this.$createElement
+
             return <Btn
                 on-click={event}
                 class="dropdown-toggle"
                 data-toggle="dropdown"
                 aria-haspopup="true"
                 aria-expanded={this.visibility}
-                prop-active={this.visibility}
-                prop-variant={this.variant}
-                prop-size={this.size}>
+                active={this.visibility}
+                variant={this.variant}
+                size={this.size}>
                 { children }
             </Btn>
         },
-        _renderDropdownMenu(h) {
+        _renderDropdownMenu() {
+            const h = this.$createElement
+
             return <DropdownMenu
                 ref="dropdown"
                 on-show={this._show}
                 on-hide={this._hide}
-                prop-options={this.options}
-                prop-title={this.title}>
+                options={this.options}
+                title={this.title}>
             </DropdownMenu>
         },
-        btnClick(h) {
+        btnClick() {
             // when splitted do the action in it
             if (this.split) this.split()
             // otherwise toggle dropdown
@@ -101,11 +107,11 @@ export default {
     },
     render(h) {
         // define empty children
-        const children = [this._renderDropdownMenu(h)]
+        const children = [this._renderDropdownMenu()]
 
-        if (this.split) children.unshift(...this._renderSplitted(h))
+        if (this.split) children.unshift(...this._renderSplitted())
 
-        else children.unshift(this._renderButton(h, this.btnClick, this.text))
+        else children.unshift(this._renderButton(this.btnClick, [this.$slots.default, this.text]))
 
         return <div role="group" class={this.className}>
             { children }
