@@ -1,0 +1,38 @@
+{
+    "root": true,
+    "plugins": [
+        "react"
+    ],
+    "env": {
+        "es6": true,
+        "node": true,
+        "browser": true
+    },
+    "parser": "babel-eslint",
+    "rules": {
+        "accessor-pairs": 2,
+        "block-scoped-var": 2,
+        "comma-dangle": [2, "never"],
+        "curly": [1, "multi"],
+        "dot-location": [2, "property"],
+        "dot-notation": 2,
+        "eqeqeq": [2, "smart"],
+        "func-names": 2,
+        "guard-for-in": 2,
+        "handle-callback-err": [2, "e"],
+        "no-eq-null": 2,
+        "no-extra-semi": 2,
+        "no-labels": 2,
+        "no-multi-str": 2,
+        "no-proto": 2,
+        "no-trailing-spaces": 1,
+        "no-undef": 2,
+        "no-var": 1,
+        "quotes": [2, "single"],
+        "semi-spacing": 2,
+        "space-before-function-paren": [1, "never"],
+        "strict": 0,
+        "valid-typeof": 2,
+        "yoda": 2
+    }
+}

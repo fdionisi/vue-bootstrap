@@ -1,0 +1,275 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Vue Bootstrap v4</title>
+    <script type="text/javascript" src="/node_modules/vue/dist/vue.js"></script>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha/css/bootstrap.min.css" media="screen" title="no title" charset="utf-8">
+</head>
+<body>
+    <div id="bootstrap">
+    </div>
+
+    <script type="text/javascript">
+        console.log(var componentsName = Object.keys(VueBootstrap));
+        var componentsName = Object.keys(VueBootstrap);
+        for (var i = 0; i < componentsName.length; i++) {
+            var name = componentsName[i]
+            var component = VueBootstrap[name]
+            if (typeof component !== 'object') continue;
+            Vue.component(
+                component.name || name,
+                VueBootstrap[name]
+            )
+        }
+
+        window.Test = new Vue({
+            el: '#bootstrap',
+            template: `
+                <div class="bootstrap-test">
+                    <h1 class="bd-title" id="content"><a class="anchorjs-link " href="#content" aria-label="Anchor link for: content" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: inherit; position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Buttons</h1>
+                    <h2 id="examples"><a class="anchorjs-link " href="#examples" aria-label="Anchor link for: examples" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: inherit; position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Examples</h2>
+                    <p>Bootstrap includes six predefined button styles, each serving its own semantic purpose.</p>
+                    <div class="bd-example" data-example-id="">
+                        <!-- Provides extra visual weight and identifies the primary action in a set of buttons -->
+                        <btn :variant="'primary'">Primary</btn>
+
+                        <!-- Secondary, outline button -->
+                        <btn :variant="'secondary'">Secondary</btn>
+
+                        <!-- Indicates a successful or positive action -->
+                        <btn :variant="'success'">Success</btn>
+
+                        <!-- Contextual button for informational alert messages -->
+                        <btn :variant="'info'">Info</btn>
+
+                        <!-- Indicates caution should be taken with this action -->
+                        <btn :variant="'warning'">Warning</btn>
+
+                        <!-- Indicates a dangerous or potentially negative action -->
+                        <btn :variant="'danger'">Danger</btn>
+
+                        <!-- Deemphasize a button by making it look like a link while maintaining button behavior -->
+                        <btn :variant="'link'">Link</btn>
+                    </div>
+
+                    <h2 id="button-tags"><a class="anchorjs-link " href="#button-tags" aria-label="Anchor link for: button tags" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: inherit; position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Button tags</h2>
+                    <p>The <code class="highlighter-rouge">.btn</code> classes are designed to be used with the <code class="highlighter-rouge">&lt;button&gt;</code> element. However, you can also use these classes on <code class="highlighter-rouge">&lt;a&gt;</code> or <code class="highlighter-rouge">&lt;input&gt;</code> elements (though some browsers may apply a slightly different rendering).</p>
+                    <p>When using button classes on <code class="highlighter-rouge">&lt;a&gt;</code> elements that are used to trigger in-page functionality (like collapsing content), rather than linking to new pages or sections within the current page, these links should be given a <code class="highlighter-rouge">role="button"</code> to appropriately convey their purpose to assistive technologies such as screen readers.</p>
+                    <div class="bd-example" data-example-id="">
+                        <btn :variant="'primary'">Button</btn>
+                        <btn :variant="'primary'" :tag="'a'">Link</btn>
+                        <btn :variant="'primary'" :tag="'input'" :text="'Input'"></btn>
+                        <btn :variant="'primary'" :tag="'input'" :type="'submit'" :text="'Submit'"></btn>
+                    </div>
+
+                    <h2 id="outline-buttons"><a class="anchorjs-link " href="#outline-buttons" aria-label="Anchor link for: outline buttons" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: inherit; position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Outline buttons</h2>
+                    <p>In need of a button, but not the hefty background colors they bring? Replace the default modifier classes with the <code class="highlighter-rouge">.btn-*-outline</code> ones to remove all background images and colors on any button.</p>
+                    <div class="bd-example" data-example-id="">
+                        <!-- Provides extra visual weight and identifies the primary action in a set of buttons -->
+                        <btn :outline="true" :variant="'primary'">Primary</btn>
+
+                        <!-- Secondary, outline button -->
+                        <btn :outline="true" :variant="'secondary'">Secondary</btn>
+
+                        <!-- Indicates a successful or positive action -->
+                        <btn :outline="true" :variant="'success'">Success</btn>
+
+                        <!-- Contextual button for informational alert messages -->
+                        <btn :outline="true" :variant="'info'">Info</btn>
+
+                        <!-- Indicates caution should be taken with this action -->
+                        <btn :outline="true" :variant="'warning'">Warning</btn>
+
+                        <!-- Indicates a dangerous or potentially negative action -->
+                        <btn :outline="true" :variant="'danger'">Danger</btn>
+                    </div>
+
+                    <h2 id="sizes"><a class="anchorjs-link " href="#sizes" aria-label="Anchor link for: sizes" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: inherit; position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Sizes</h2>
+                    <p>Fancy larger or smaller buttons? Add <code class="highlighter-rouge">.btn-lg</code> or <code class="highlighter-rouge">.btn-sm</code> for additional sizes.</p>
+                    <div class="bd-example" data-example-id="">
+                        <btn :variant="'primary'" :size="'lg'">Large button</btn>
+                        <btn :size="'lg'">Large button</btn>
+                    </div>
+                    <div class="bd-example" data-example-id="">
+                        <btn :variant="'primary'" :size="'sm'">Small button</btn>
+                        <btn :size="'sm'">Small button</btn>
+                    </div>
+                    <p>Create block level buttons—those that span the full width of a parent—by adding <code class="highlighter-rouge">.btn-block</code>.</p>
+                    <div class="bd-example" data-example-id="">
+                        <btn :variant="'primary'" :block="true">Block level button</btn>
+                        <btn :variant="'secondary'" :block="true">Block level button</btn>
+                    </div>
+                    <h2 id="active-state"><a class="anchorjs-link " href="#active-state" aria-label="Anchor link for: active state" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: inherit; position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Active state</h2>
+                    <p>Buttons will appear pressed (with a darker background, darker border, and inset shadow) when active. <strong>There’s no need to add a class to <code class="highlighter-rouge">&lt;button&gt;</code>s as they use a pseudo-class</strong>. However, you can still force the same active appearance with <code class="highlighter-rouge">.active</code> (and include the <code>aria-pressed="true"</code> attribute) should you need to replicate the state programmatically.</p>
+                    <div class="bd-example" data-example-id="">
+                        <btn :tag="'a'" :variant="'primary'" :active="true">Primary link</btn>
+                        <btn :tag="'a'" :variant="'secondary'" :active="true">Link</btn>
+                    </div>
+                    <h2 id="disabled-state"><a class="anchorjs-link " href="#disabled-state" aria-label="Anchor link for: disabled state" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: inherit; position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Disabled state</h2>
+                    <p>Make buttons look inactive by adding the <code class="highlighter-rouge">disabled</code> boolean attribute to any <code class="highlighter-rouge">&lt;button&gt;</code> element.</p>
+                    <div class="bd-example" data-example-id="">
+                        <btn :variant="'primary'" :disabled="true">Primary button</btn>
+                        <btn :variant="'secondary'" :disabled="true">Button</btn>
+                    </div>
+                    <p>As <code class="highlighter-rouge">&lt;a&gt;</code> elements don’t support the <code class="highlighter-rouge">disabled</code> attribute, you must add the <code class="highlighter-rouge">.disabled</code> class to fake it.</p>
+                    <div class="bd-example" data-example-id="">
+                        <btn :tag="'a'" :variant="'primary'" :disabled="true">Primary button</btn>
+                        <btn :tag="'a'" :variant="'secondary'" :disabled="true">Button</btn>
+                    </div>
+                    <h1 class="bd-title" id="content"><a class="anchorjs-link " href="#content" aria-label="Anchor link for: content" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: inherit; position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Button group</h1>
+                    <h2 id="basic-example"><a class="anchorjs-link " href="#basic-example" aria-label="Anchor link for: basic example" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: inherit; position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Basic example</h2>
+                    <p>Wrap a series of buttons with <code class="highlighter-rouge">.btn</code> in <code class="highlighter-rouge">.btn-group</code>.</p>
+                    <div class="bd-example" data-example-id="">
+                        <btn-group :options="basicOptions" :name="'Basic example'"></btn-group>
+                    </div>
+                    <h2 id="button-toolbar"><a class="anchorjs-link " href="#button-toolbar" aria-label="Anchor link for: button toolbar" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: inherit; position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Button toolbar</h2>
+                    <p>Combine sets of button groups into button toolbars for more complex components.</p>
+                    <div class="bd-example" data-example-id="">
+                        <btn-toolbar :groups="basicOptionsGroups" :name="'Basic Toolbar example'"></btn-toolbar>
+                    </div>
+                    <h2 id="sizing"><a class="anchorjs-link " href="#sizing" aria-label="Anchor link for: sizing" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: inherit; position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Sizing</h2>
+                    <p>Instead of applying button sizing classes to every button in a group, just add <code class="highlighter-rouge">.btn-group-*</code> to each <code class="highlighter-rouge">.btn-group</code>, including each one when nesting multiple groups.</p>
+                    <div class="bd-example">
+                        <btn-group :options="basicOptions" :size="'lg'" :name="'Basic example'"></btn-group>
+                        <btn-group :options="basicOptions" :size="'md'" :name="'Basic example'"></btn-group>
+                        <btn-group :options="basicOptions" :size="'sm'" :name="'Basic example'"></btn-group>
+                    </div>
+                    <h2 id="nesting"><a class="anchorjs-link " href="#nesting" aria-label="Anchor link for: nesting" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: inherit; position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Nesting</h2>
+                    <p>Place a <code class="highlighter-rouge">.btn-group</code> within another <code class="highlighter-rouge">.btn-group</code> when you want dropdown menus mixed with a series of buttons.</p>
+                    <div class="bd-example" data-example-id="">
+                        <btn-group :options="basicDropdownOptions" :name="'Basic Dropdown example'"></btn-group>
+                    </div>
+                    <h2 id="vertical-variation"><a class="anchorjs-link " href="#vertical-variation" aria-label="Anchor link for: vertical variation" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: inherit; position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Vertical variation</h2>
+                    <p>Make a set of buttons appear vertically stacked rather than horizontally. <strong>Split button dropdowns are not supported here.</strong></p>
+                    <div class="bd-example">
+                        <btn-group :vertical="true" :options="btnGroupOptions" :name="'Vertical item example'"></btn-group>
+                    </div>
+                    <h1 class="bd-title" id="content"><a class="anchorjs-link " href="#content" aria-label="Anchor link for: content" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: inherit; position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Button dropdown</h1>
+                    <p>Use any button to trigger a dropdown menu by placing it within a <code class="highlighter-rouge">.btn-group</code> and providing the proper dropdown menu markup.</p>
+                    <h3 id="single-button-dropdowns"><a class="anchorjs-link " href="#single-button-dropdowns" aria-label="Anchor link for: single button dropdowns" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: inherit; position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Single button dropdowns</h3>
+                    <p>Turn a button into a dropdown toggle with some basic markup changes.</p>
+                    <div class="bd-example">
+                        <btn-dropdown :options="btnDropdownOptions">Secondary</btn-dropdown>
+                        <btn-dropdown :options="btnDropdownOptions" :variant="'primary'">Primary</btn-dropdown>
+                        <btn-dropdown :options="btnDropdownOptions" :variant="'success'">Success</btn-dropdown>
+                        <btn-dropdown :options="btnDropdownOptions" :variant="'info'">Info</btn-dropdown>
+                        <btn-dropdown :options="btnDropdownOptions" :variant="'warning'">Warning</btn-dropdown>
+                        <btn-dropdown :options="btnDropdownOptions" :variant="'danger'">Danger</btn-dropdown>
+                    </div>
+                    <h3 id="split-button-dropdowns"><a class="anchorjs-link " href="#split-button-dropdowns" aria-label="Anchor link for: split button dropdowns" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: inherit; position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Split button dropdowns</h3>
+                    <p>Similarly, create split button dropdowns with the same markup changes, only with a separate button.</p>
+                    <div class="bd-example">
+                        <btn-dropdown :split="noop" :options="btnDropdownOptions">Secondary</btn-dropdown>
+                        <btn-dropdown :split="noop" :options="btnDropdownOptions" :variant="'primary'">Primary</btn-dropdown>
+                        <btn-dropdown :split="noop" :options="btnDropdownOptions" :variant="'success'">Success</btn-dropdown>
+                        <btn-dropdown :split="noop" :options="btnDropdownOptions" :variant="'info'">Info</btn-dropdown>
+                        <btn-dropdown :split="noop" :options="btnDropdownOptions" :variant="'warning'">Warning</btn-dropdown>
+                        <btn-dropdown :split="noop" :options="btnDropdownOptions" :variant="'danger'">Danger</btn-dropdown>
+                    </div>
+                    <h3 id="sizing"><a class="anchorjs-link " href="#sizing" aria-label="Anchor link for: sizing" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: inherit; position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Sizing</h3>
+                    <p>Button dropdowns work with buttons of all sizes.</p>
+                    <div class="bd-example">
+                        <btn-dropdown :size="'lg'" :options="btnDropdownOptions">Large button</btn-dropdown>
+                        <btn-dropdown :size="'sm'" :options="btnDropdownOptions">Small button</btn-dropdown>
+                    </div>
+                    <div class="bd-example">
+                        <btn-dropdown :split="noop" :size="'lg'" :options="btnDropdownOptions">Large button</btn-dropdown>
+                        <btn-dropdown :split="noop" :size="'sm'" :options="btnDropdownOptions">Small button</btn-dropdown>
+                    </div>
+                    <h3 id="dropup-variation"><a class="anchorjs-link " href="#dropup-variation" aria-label="Anchor link for: dropup variation" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: inherit; position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Dropup variation</h3>
+                    <p>Trigger dropdown menus above elements by adding <code class="highlighter-rouge">.dropup</code> to the parent.</p>
+                    <div class="bd-example">
+                        <btn-dropdown :dropup="true" :options="btnDropdownOptions">Large button</btn-dropdown>
+                        <btn-dropdown :dropup="true" :split="noop" :size="'sm'" :options="btnDropdownOptions">Small button</btn-dropdown>
+                    </div>
+                    <h2 id="form-controls"><a class="anchorjs-link " href="#form-controls" aria-label="Anchor link for: form controls" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: inherit; position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Form controls</h2>
+                    <p>Bootstrap’s form controls expand on <a href="/content/reboot/#forms">our Rebooted form styles</a> with classes. Use these classes to opt into their customized displays for a more consistent rendering across browsers and devices. The example form below demonstrates common HTML form elements that receive updated styles from Bootstrap with additional classes.</p>
+                    <p>Remember, since Bootstrap utilizes the HTML5 doctype, <strong>all inputs must have a <code class="highlighter-rouge">type</code> attribute</strong>.</p>
+                    <div class="bd-example">
+                        <form-control :type="'email'" :title="'Email address'" :placeholder="'Enter email'" :note="'We will never share your email w ith anyone els e.'"></form-control>
+                        <form-control :type="'password'" :title="'Password'" :placeholder="'Password'"></form-control>
+                        <form-control :type="'select'" :title="'Example select'" :options="selectOptions"></form-control>
+                        <form-control :type="'select'" :multiple="true" :title="'Example multiple select'" :options="selectOptions"></form-control>
+                        <form-control :type="'textarea'" :title="'Example textarea'"></form-control>
+                    </div>
+                </div>
+            `,
+            methods: {
+                noop: () => null,
+                log(ev) {
+                    console.log(ev)
+                }
+            },
+            computed: {
+                basicOptions() {
+                    return [
+                        { text: 'Left' },
+                        { text: 'Middle' },
+                        { text: 'Right' }
+                    ]
+                },
+                basicOptionsGroups() {
+                    return [
+                        { name: 'Left', options: this.basicOptions },
+                        { name: 'Middle', options: this.basicOptions },
+                        { name: 'Right', options: this.basicOptions }
+                    ]
+                },
+                basicDropdownOptions() {
+                    return [
+                        { text: '1' },
+                        { text: '2' },
+                        this.btnDropdownOption
+                    ]
+                },
+                btnButtonOption() {
+                    return {
+                        text: 'Button'
+                    }
+                },
+                dropdownLink() {
+                    return { text: 'Dropdown Link' }
+                },
+                btnDropdownOptions() {
+                    return [
+                        this.dropdownLink,
+                        this.dropdownLink,
+                        this.dropdownLink,
+                        { divider: true },
+                        this.dropdownLink
+                    ]
+                },
+                btnDropdownOption() {
+                    return {
+                        dropdown: true,
+                        text: 'Dropdown',
+                        id: 'Dropdown',
+                        options: this.btnDropdownOptions
+                    }
+                },
+                btnGroupOptions() {
+                    return [
+                        this.btnButtonOption,
+                        this.btnButtonOption,
+                        this.btnDropdownOption,
+                        this.btnButtonOption,
+                        this.btnButtonOption,
+                        this.btnDropdownOption,
+                        this.btnDropdownOption,
+                        this.btnDropdownOption
+                    ]
+                },
+                selectOptions() {
+                    return [
+                        { text: '1', value: 1 },
+                        { text: '2', value: 2 },
+                        { text: '3', value: 3 },
+                        { text: '4', value: 4 }
+                    ]
+                }
+            }
+        })
+    </script>
+</body>
+</html>
