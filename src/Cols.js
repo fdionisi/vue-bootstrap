@@ -52,9 +52,9 @@ export default {
             DEVICE_SIZES.forEach(size => {
                 function popProp(propSuffix, modifier) {
                     const propName = `${size}${propSuffix}`
-                    const propValue = elementProps[propName]
+                    const propValue = this[propName]
 
-                    if (propValue !== null)
+                    if (propValue)
                         classes.push(`col-${size}${modifier}-${propValue}`)
 
                     delete elementProps[propName]
