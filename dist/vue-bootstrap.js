@@ -189,6 +189,7 @@
     }
 
     var DropdownMenu = {
+        name: 'dropdown-menu',
         props: {
             options: {
                 type: Array,
@@ -693,6 +694,86 @@
         }
     };
 
+    var DEVICE_SIZES = ['lg', 'md', 'sm', 'xs'];
+
+    var Col = {
+        name: 'col',
+        props: {
+            tag: {
+                type: String,
+                default: 'div'
+            },
+            xs: Number,
+            sm: Number,
+            md: Number,
+            lg: Number,
+            xsHidden: {
+                type: Boolean,
+                default: false
+            },
+            smHidden: {
+                type: Boolean,
+                default: false
+            },
+            mdHidden: {
+                type: Boolean,
+                default: false
+            },
+            lgHidden: {
+                type: Boolean,
+                default: false
+            },
+            xsOffset: Number,
+            smOffset: Number,
+            mdOffset: Number,
+            lgOffset: Number,
+            xsPush: Number,
+            smPush: Number,
+            mdPush: Number,
+            lgPush: Number,
+            xsPull: Number,
+            smPull: Number,
+            mdPull: Number,
+            lgPull: Number
+        },
+        computed: {
+            className: function className() {
+                var classes = [];
+                var elementProps = this.$options.props;
+                DEVICE_SIZES.forEach(function (size) {
+                    function popProp(propSuffix, modifier) {
+                        var propName = '' + size + propSuffix;
+                        var propValue = elementProps[propName];
+
+                        if (propValue !== null) classes.push('col-' + size + modifier + '-' + propValue);
+
+                        delete elementProps[propName];
+                    }
+
+                    popProp('', '');
+                    popProp('Offset', '-offset');
+                    popProp('Push', '-push');
+                    popProp('Pull', '-pull');
+
+                    var hiddenPropName = size + 'Hidden';
+                    if (elementProps[hiddenPropName]) classes.push('hidden-' + size);
+
+                    delete elementProps[hiddenPropName];
+                });
+
+                return classes;
+            }
+        },
+        render: function render(h) {
+            var Component = this.tag;
+            return h(
+                Component,
+                { 'class': this.className },
+                [this.$slots.default]
+            );
+        }
+    };
+
     var FormControl = {
         name: 'form-control',
         props: {
@@ -869,6 +950,7 @@
     exports.BtnGroup = BtnGroup;
     exports.BtnDropdown = BtnDropdown;
     exports.BtnToolbar = BtnToolbar;
+    exports.Col = Col;
     exports.DropdownMenu = DropdownMenu;
     exports.FormControl = FormControl;
 
