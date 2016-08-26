@@ -66,10 +66,8 @@ export default {
                 popProp('Pull', '-pull')
 
                 const hiddenPropName = `${size}Hidden`
-                if (elementProps[hiddenPropName])
+                if (this[hiddenPropName])
                     classes.push(`hidden-${size}`)
-
-                delete elementProps[hiddenPropName]
             })
 
             return classes
