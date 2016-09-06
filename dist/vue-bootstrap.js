@@ -9,6 +9,24 @@
 	(factory((global.VueBootstrap = global.VueBootstrap || {})));
 }(this, (function (exports) { 'use strict';
 
+    var SIZES = ['sm', 'md', 'lg'];
+
+    var STATUS_VARIANTS = ['success', 'info', 'warning', 'danger'];
+    var VARIANTS = STATUS_VARIANTS.concat('primary', 'secondary');
+    var BUTTON_VARIANTS = VARIANTS.concat('link');
+
+    var DEVICE_SIZES = ['lg', 'md', 'sm', 'xs'];
+
+    function inEnum() {
+        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+        }
+
+        return function (val) {
+            return args.includes(val);
+        };
+    }
+
     var defineProperty = function (obj, key, value) {
       if (key in obj) {
         Object.defineProperty(obj, key, {
@@ -37,30 +55,72 @@
     var Alert = {
         name: 'alert',
         props: {
-            variant: {}
+            dismissible: {
+                type: Boolean,
+                default: true
+            },
+            variant: {
+                validator: inEnum.apply(undefined, toConsumableArray(STATUS_VARIANTS)),
+                default: 'success'
+            }
         },
         computed: {
             className: function className() {
-                return defineProperty({
+                var _ref;
+
+                return _ref = {
                     alert: true
-                }, "alert-" + this.variant, true);
+                }, defineProperty(_ref, 'alert-' + this.variant, true), defineProperty(_ref, 'alert-dismissible', this.dismissible), _ref;
+            }
+        },
+        methods: {
+            _renderClose: function _renderClose() {
+                var h = this.$createElement;
+
+                return h(
+                    'button',
+                    {
+                        on: {
+                            click: this.close
+                        },
+                        attrs: { type: 'button', 'data-dismiss': 'alert', 'aria-label': 'Close' },
+                        'class': 'close' },
+                    [h(
+                        'span',
+                        {
+                            attrs: { 'aria-hidden': 'true' }
+                        },
+                        ['×']
+                    )]
+                );
+            },
+            closeClick: function closeClick(ev) {
+                this.$emit('close', ev, this);
             }
         },
         render: function render(h) {
             return h(
-                "div",
+                'div',
                 {
                     attrs: {
-                        role: "alert"
+                        role: 'alert'
                     },
-                    "class": this.className },
-                [this.$slots.default]
+                    'class': this.className },
+                [this.dismissible && this._renderClose(), this.$slots.default]
             );
         }
     };
 
     var Breadcrumb = {
         name: 'breadcrumb',
+        props: {
+            list: {
+                type: Array,
+                default: function _default() {
+                    return [];
+                }
+            }
+        },
         computed: {
             lastPosition: function lastPosition() {
                 return this.list.length - 1;
@@ -68,6 +128,7 @@
         },
         methods: {
             _renderCrumb: function _renderCrumb(item, index) {
+                var h = this.$createElement;
                 var className = ['breadcrumb-item'];
 
                 if (index === this.lastPosition) className.push('active');
@@ -142,23 +203,6 @@
     });
 
     var _mergeJSXProps = interopDefault(index);
-
-    var SIZES = ['sm', 'md', 'lg'];
-
-    var VARIANTS = ['primary', 'secondary', 'success', 'info', 'warning', 'danger'];
-    var BUTTON_VARIANTS = VARIANTS.concat('link');
-
-    var DEVICE_SIZES = ['lg', 'md', 'sm', 'xs'];
-
-    function inEnum() {
-        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-            args[_key] = arguments[_key];
-        }
-
-        return function (val) {
-            return args.includes(val);
-        };
-    }
 
     var BUTTON_TAG = ['button', 'a', 'input'];
     var BUTTON_TYPES = ['button', 'reset', 'submit'];
@@ -756,6 +800,152 @@
         }
     };
 
+    var Carousel = {
+        props: {
+            indicators: {
+                type: Boolean,
+                default: true
+            },
+            controls: {
+                type: Boolean,
+                default: true
+            },
+            list: {
+                type: Array,
+                default: function _default() {
+                    return [];
+                }
+            }
+        },
+        data: function data() {
+            return {
+                position: 0
+            };
+        },
+
+        methods: {
+            slideTo: function slideTo() {
+                return function () {};
+            },
+            slidePosition: function slidePosition() {
+                return function () {};
+            },
+            _renderIndicators: function _renderIndicators() {
+                var _this = this;
+
+                var h = this.$createElement;
+
+                var renderIndicator = function renderIndicator(item, index) {
+                    return h(
+                        "li",
+                        {
+                            on: {
+                                click: _this.slideTo(index)
+                            },
+                            "class": _this.position === index && 'active' },
+                        []
+                    );
+                };
+
+                return h(
+                    "ol",
+                    { "class": "carousel-indicators" },
+                    [this.list.map(renderIndicator)]
+                );
+            },
+            _renderItemCaption: function _renderItemCaption(caption) {
+                var h = this.$createElement;
+
+                return h(
+                    "div",
+                    { "class": "carousel-caption" },
+                    [h(
+                        "h3",
+                        null,
+                        [caption.title]
+                    ), h(
+                        "p",
+                        null,
+                        [caption.desc]
+                    )]
+                );
+            },
+            _renderItem: function _renderItem(item, index) {
+                var h = this.$createElement;
+
+                if (typeof item === 'string') item = {
+                    img: item
+                };
+
+                var className = {
+                    'carousel-item': true,
+                    active: index === this.position
+                };
+
+                return h(
+                    "div",
+                    { "class": "carousel-item" },
+                    [h(
+                        "img",
+                        {
+                            attrs: { src: item.img, alt: item.title }
+                        },
+                        []
+                    ), item.caption && this._renderItemCaption(item.caption)]
+                );
+            },
+            _renderLeftControl: function _renderLeftControl() {
+                return this._renderControl('left');
+            },
+            _renderRightControl: function _renderRightControl() {
+                return this._renderControl('right');
+            },
+            _renderControl: function _renderControl(position) {
+                var h = this.$createElement;
+
+                var className = defineProperty({
+                    'carousel-control': true
+                }, position, true);
+
+                var direction = position === 'left' ? 'prev' : 'next';
+
+                return h(
+                    "a",
+                    {
+                        "class": className,
+                        attrs: { href: "#"
+                        },
+                        on: {
+                            click: this.slidePosition(direction)
+                        }
+                    },
+                    [h(
+                        "span",
+                        { "class": "icon-" + direction, attrs: { "aria-hidden": "true" }
+                        },
+                        []
+                    ), h(
+                        "span",
+                        { "class": "sr-only" },
+                        [position === 'left' ? 'Previous' : 'Next']
+                    )]
+                );
+            }
+        },
+        render: function render(h) {
+            return h(
+                "div",
+                { "class": "carousel slide" },
+                [this.indicators && this._renderIndicators(), h(
+                    "div",
+                    { "class": "carousel-inner", attrs: { role: "listbox" }
+                    },
+                    [this.list.map(this._renderItem)]
+                ), this.controls && this._renderLeftControl(), this.controls && this._renderRightControl()]
+            );
+        }
+    };
+
     var colsClass = function colsClass() {
         var ctx = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
         var opposite = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
@@ -851,14 +1041,19 @@
             }
         },
         render: function render(h) {
+            var _this = this;
 
             return h(
                 'form',
                 {
                     'class': this.className,
-                    nativeOn: {
-                        submit: this.$emit('submit'),
-                        reset: this.$emit('reset')
+                    on: {
+                        submit: function submit(ev) {
+                            return _this.$emit('submit', ev, _this);
+                        },
+                        reset: function reset(ev) {
+                            return _this.$emit('reset', ev, _this);
+                        }
                     }
                 },
                 [this.$slots.default]
@@ -1285,12 +1480,12 @@
         },
         render: function render(h) {
             var fallbackStyle = {
-                width: Math.round(this.max * 100 / this.value) + '%'
+                width: Math.round(this.value * 100 / this.max) + '%'
             };
 
             return h(
                 'progress',
-                { 'class': 'progress', attrs: { value: this.value, max: this.max }
+                { 'class': this.className, attrs: { value: this.value, max: this.max }
                 },
                 [h(
                     'div',
@@ -1340,6 +1535,7 @@
     exports.BtnGroup = BtnGroup;
     exports.BtnDropdown = BtnDropdown;
     exports.BtnToolbar = BtnToolbar;
+    exports.Carousel = Carousel;
     exports.Cols = Cols;
     exports.DropdownMenu = DropdownMenu;
     exports.Forms = Forms;
