@@ -49,7 +49,7 @@ export default {
                 btn: true,
                 active: this.disabled ? false : this.active,
                 disabled: this.tag === 'a' && this.disabled,
-                [`btn-${this.variant}${this.variant !== 'link' && this.outline && '-outline' || ''}`]: true,
+                [`btn-${this.variant !== 'link' && this.outline && 'outline-' || ''}${this.variant}`]: true,
                 [`btn-${this.size}`]: this.size !== 'md',
                 'btn-block': this.block
             }

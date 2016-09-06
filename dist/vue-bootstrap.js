@@ -9,6 +9,91 @@
 	(factory((global.VueBootstrap = global.VueBootstrap || {})));
 }(this, (function (exports) { 'use strict';
 
+    var defineProperty = function (obj, key, value) {
+      if (key in obj) {
+        Object.defineProperty(obj, key, {
+          value: value,
+          enumerable: true,
+          configurable: true,
+          writable: true
+        });
+      } else {
+        obj[key] = value;
+      }
+
+      return obj;
+    };
+
+    var toConsumableArray = function (arr) {
+      if (Array.isArray(arr)) {
+        for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
+
+        return arr2;
+      } else {
+        return Array.from(arr);
+      }
+    };
+
+    var Alert = {
+        name: 'alert',
+        props: {
+            variant: {}
+        },
+        computed: {
+            className: function className() {
+                return defineProperty({
+                    alert: true
+                }, "alert-" + this.variant, true);
+            }
+        },
+        render: function render(h) {
+            return h(
+                "div",
+                {
+                    attrs: {
+                        role: "alert"
+                    },
+                    "class": this.className },
+                [this.$slots.default]
+            );
+        }
+    };
+
+    var Breadcrumb = {
+        name: 'breadcrumb',
+        computed: {
+            lastPosition: function lastPosition() {
+                return this.list.length - 1;
+            }
+        },
+        methods: {
+            _renderCrumb: function _renderCrumb(item, index) {
+                var className = ['breadcrumb-item'];
+
+                if (index === this.lastPosition) className.push('active');
+
+                return h(
+                    'li',
+                    { 'class': className },
+                    [h(
+                        'a',
+                        {
+                            attrs: { href: item.href || '#' }
+                        },
+                        [item.text]
+                    )]
+                );
+            }
+        },
+        render: function render(h) {
+            return h(
+                'ol',
+                { 'class': 'breadcrumb' },
+                [this.list.map(this._renderCrumb)]
+            );
+        }
+    };
+
     function interopDefault(ex) {
     	return ex && typeof ex === 'object' && 'default' in ex ? ex['default'] : ex;
     }
@@ -63,6 +148,8 @@
     var VARIANTS = ['primary', 'secondary', 'success', 'info', 'warning', 'danger'];
     var BUTTON_VARIANTS = VARIANTS.concat('link');
 
+    var DEVICE_SIZES = ['lg', 'md', 'sm', 'xs'];
+
     function inEnum() {
         for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
             args[_key] = arguments[_key];
@@ -72,31 +159,6 @@
             return args.includes(val);
         };
     }
-
-    var defineProperty = function (obj, key, value) {
-      if (key in obj) {
-        Object.defineProperty(obj, key, {
-          value: value,
-          enumerable: true,
-          configurable: true,
-          writable: true
-        });
-      } else {
-        obj[key] = value;
-      }
-
-      return obj;
-    };
-
-    var toConsumableArray = function (arr) {
-      if (Array.isArray(arr)) {
-        for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
-
-        return arr2;
-      } else {
-        return Array.from(arr);
-      }
-    };
 
     var BUTTON_TAG = ['button', 'a', 'input'];
     var BUTTON_TYPES = ['button', 'reset', 'submit'];
@@ -148,7 +210,7 @@
                     btn: true,
                     active: this.disabled ? false : this.active,
                     disabled: this.tag === 'a' && this.disabled
-                }, defineProperty(_ref, 'btn-' + this.variant + (this.variant !== 'link' && this.outline && '-outline' || ''), true), defineProperty(_ref, 'btn-' + this.size, this.size !== 'md'), defineProperty(_ref, 'btn-block', this.block), _ref;
+                }, defineProperty(_ref, 'btn-' + (this.variant !== 'link' && this.outline && 'outline-' || '') + this.variant, true), defineProperty(_ref, 'btn-' + this.size, this.size !== 'md'), defineProperty(_ref, 'btn-block', this.block), _ref;
             }
         },
         render: function render(h) {
@@ -694,7 +756,29 @@
         }
     };
 
-    var DEVICE_SIZES = ['lg', 'md', 'sm', 'xs'];
+    var colsClass = function colsClass() {
+        var ctx = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+        var opposite = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+
+        return DEVICE_SIZES.reduce(function (classes, size) {
+            var popProp = function popProp(propSuffix, modifier) {
+                var propName = '' + size + propSuffix;
+                var propValue = opposite ? 12 - ctx[propName] : ctx[propName];
+
+                if (propValue) classes.push('col-' + size + modifier + '-' + propValue);
+            };
+
+            popProp('', '');
+            popProp('Offset', '-offset');
+            popProp('Push', '-push');
+            popProp('Pull', '-pull');
+
+            var hiddenPropName = size + 'Hidden';
+            if (ctx[hiddenPropName]) classes.push('hidden-' + size);
+
+            return classes;
+        }, []);
+    };
 
     var Cols = {
         name: 'cols',
@@ -738,28 +822,7 @@
         },
         computed: {
             className: function className() {
-                var _this = this;
-
-                var classes = [];
-                var elementProps = this.$options.props;
-                DEVICE_SIZES.forEach(function (size) {
-                    var popProp = function popProp(propSuffix, modifier) {
-                        var propName = '' + size + propSuffix;
-                        var propValue = _this[propName];
-
-                        if (propValue) classes.push('col-' + size + modifier + '-' + propValue);
-                    };
-
-                    popProp('', '');
-                    popProp('Offset', '-offset');
-                    popProp('Push', '-push');
-                    popProp('Pull', '-pull');
-
-                    var hiddenPropName = size + 'Hidden';
-                    if (_this[hiddenPropName]) classes.push('hidden-' + size);
-                });
-
-                return classes;
+                return colsClass(this);
             }
         },
         render: function render(h) {
@@ -772,12 +835,313 @@
         }
     };
 
-    var FormControl = {
-        name: 'form-control',
+    var Forms = {
+        name: 'forms',
+        props: {
+            inline: {
+                type: Boolean,
+                default: false
+            }
+        },
+        computed: {
+            className: function className() {
+                return {
+                    'form-inline': this.inline
+                };
+            }
+        },
+        render: function render(h) {
+
+            return h(
+                'form',
+                {
+                    'class': this.className,
+                    nativeOn: {
+                        submit: this.$emit('submit'),
+                        reset: this.$emit('reset')
+                    }
+                },
+                [this.$slots.default]
+            );
+        }
+    };
+
+    var FormGroup = {
+        name: 'form-group',
+        props: {
+            id: String,
+            inline: {
+                type: Boolean,
+                default: false
+            },
+            note: String,
+            placeholder: String,
+            multiple: {
+                type: Boolean,
+                default: false
+            },
+            options: {
+                type: Array,
+                default: function _default() {
+                    return [];
+                }
+            },
+            status: {
+                type: String
+            },
+            title: String,
+            row: null,
+            size: {
+                type: String,
+                default: 'md'
+            },
+            value: {
+                type: null,
+                twoWay: true
+            },
+            type: {
+                type: String,
+                default: 'text'
+            }
+        },
+        data: function data() {
+            return {
+                hiddenValue: null
+            };
+        },
+
+        computed: {
+            className: function className() {
+                var _ref;
+
+                return _ref = {
+                    'form-control': true
+                }, defineProperty(_ref, 'form-control-' + this.status, this.status), defineProperty(_ref, 'form-control-' + this.size, this.size !== 'md'), _ref;
+            }
+        },
+        methods: {
+            _blur: function _blur(ev) {
+                this.$emit('blur', ev, this);
+            },
+            _focus: function _focus(ev) {
+                this.$emit('focus', ev, this);
+            },
+            _keydown: function _keydown(ev) {
+                this.$emit('keydown', ev, this);
+            },
+            _keyup: function _keyup(ev) {
+                this._updateValue(ev);this.$emit('keyup', ev, this);
+            },
+            _renderElement: function _renderElement() {
+                switch (this.type) {
+                    case 'slot':
+                        return this.$slots.default;
+                    case 'static':
+                        return this._renderStatic();
+                    case 'textarea':
+                        return this._renderTextarea();
+                    case 'select':
+                        return this._renderSelect();
+                    case 'radio':
+                    case 'checkbox':
+                        return this._renderRadioCheck();
+                    default:
+                        return this._renderInput();
+                }
+            },
+            _renderStatic: function _renderStatic() {
+                return h(
+                    'p',
+                    { 'class': 'form-control-static' },
+                    [this.placeholder]
+                );
+            },
+            _renderInput: function _renderInput() {
+                var h = this.$createElement;
+
+                return this.row ? this._renderRowInput() : this._renderNormalInput();
+            },
+            _renderRowInput: function _renderRowInput() {
+                var h = this.$createElement;
+
+                return h(
+                    'div',
+                    { 'class': colsClass(this.row) },
+                    [this._renderNormalInput()]
+                );
+            },
+            _renderNormalInput: function _renderNormalInput() {
+                var h = this.$createElement;
+
+                return h(
+                    'input',
+                    {
+                        'class': 'form-control',
+                        on: {
+                            blur: this._blur,
+                            focus: this._focus,
+                            keydown: this._keydown,
+                            keyup: this._keyup
+                        },
+                        attrs: {
+                            type: this.type,
+                            id: this.id,
+                            placeholder: this.placeholder }
+                    },
+                    []
+                );
+            },
+            _renderTitle: function _renderTitle() {
+                var h = this.$createElement;
+
+                switch (this.type) {
+                    case 'radio':
+                    case 'checkbox':
+                        return h(
+                            'legend',
+                            null,
+                            [this.title]
+                        );
+                    default:
+                        var className = [];
+
+                        if (this.row) className = ['col-form-label'].concat(colsClass(this.row, true));
+
+                        return h(
+                            'label',
+                            { 'class': className, attrs: { 'for': this.id }
+                            },
+                            [this.title]
+                        );
+                }
+            },
+            _renderNote: function _renderNote() {
+                var h = this.$createElement;
+
+                return h(
+                    'small',
+                    { 'class': 'text-muted' },
+                    [this.note]
+                );
+            },
+            _renderSelect: function _renderSelect() {
+                var h = this.$createElement;
+
+                var options = this.options || [];
+
+                return h(
+                    'select',
+                    {
+                        on: {
+                            change: this._updateValue
+                        },
+
+                        'class': 'form-control',
+                        attrs: { multiple: this.multiple }
+                    },
+                    [options.map(this._renderOption)]
+                );
+            },
+            _renderOption: function _renderOption(_ref2) {
+                var text = _ref2.text;
+                var value = _ref2.value;
+
+                var h = this.$createElement;
+
+                return h(
+                    'option',
+                    {
+                        attrs: { value: value }
+                    },
+                    [text]
+                );
+            },
+            _renderTextarea: function _renderTextarea() {
+                var h = this.$createElement;
+
+                return h(
+                    'textarea',
+                    {
+                        directives: [{
+                            name: 'model',
+                            value: this.hiddenValue
+                        }],
+                        on: {
+                            keyup: this._updateValue
+                        },
+
+                        'class': 'form-control' },
+                    []
+                );
+            },
+            _renderRadioCheck: function _renderRadioCheck() {
+                var _this = this;
+
+                var h = this.$createElement;
+
+                return this.options.map(function (option) {
+                    return h(
+                        'div',
+                        { 'class': _this._radioCheckClass(option) },
+                        [h(
+                            'label',
+                            { 'class': _this.formCheck ? 'form-check-label' : '' },
+                            [h(
+                                'input',
+                                {
+                                    'class': _this.formCheck ? 'form-check-input' : '',
+                                    attrs: { type: _this.type,
+                                        name: _this.id,
+                                        id: option.id,
+                                        value: option.value,
+                                        checkbox: option.value === _this.value }
+                                },
+                                []
+                            ), option.text]
+                        )]
+                    );
+                });
+            },
+            _radioCheckClass: function _radioCheckClass(option) {
+                var _ref3;
+
+                return _ref3 = {}, defineProperty(_ref3, this.type, !this.inline && !this.formCheck), defineProperty(_ref3, this.type + '-inline', this.inline && !this.formCheck), defineProperty(_ref3, 'form-check', this.formCheck && !this.inline), defineProperty(_ref3, 'form-check-inline', this.formCheck && this.inline), defineProperty(_ref3, 'disabled', option.disabled), _ref3;
+            },
+            _updateValue: function _updateValue(_ref4) {
+                var target = _ref4.target;
+
+                var value = target.value;
+
+                this.$emit('input', value);
+            }
+        },
+        render: function render(h) {
+            return h(
+                'fieldset',
+                { 'class': 'form-group' },
+                [this.title && this._renderTitle(), this._renderElement(), this.note && this._renderNote()]
+            );
+        }
+    };
+
+    var InputGroup = {
+        name: 'input-group',
         props: {
             id: String,
             note: String,
             placeholder: String,
+            beforeAddons: {
+                type: Array,
+                default: function _default() {
+                    return [];
+                }
+            },
+            afterAddons: {
+                type: Array,
+                default: function _default() {
+                    return [];
+                }
+            },
             multiple: {
                 type: Boolean,
                 default: false
@@ -801,12 +1165,6 @@
                 default: 'text'
             }
         },
-        data: function data() {
-            return {
-                hiddenValue: null
-            };
-        },
-
         computed: {
             className: function className() {
                 return defineProperty({
@@ -827,18 +1185,13 @@
             _keyup: function _keyup(ev) {
                 this._updateValue(ev);this.$emit('keyup', ev, this);
             },
-            _renderElement: function _renderElement() {
-                switch (this.type) {
-                    case 'textarea':
-                        return this._renderTextarea();
-                    case 'select':
-                        return this._renderSelect();
-                    case 'radio':
-                    case 'checkbox':
-                        return this._renderRadioCheck();
-                    default:
-                        return this._renderInput();
-                }
+            _renderAddon: function _renderAddon(addon) {
+                var h = this.$createElement;
+                return h(
+                    'span',
+                    { 'class': 'input-group-addon' },
+                    [addon]
+                );
             },
             _renderInput: function _renderInput() {
                 var h = this.$createElement;
@@ -846,7 +1199,7 @@
                 return h(
                     'input',
                     {
-                        'class': 'form-control',
+                        'class': this.className,
                         on: {
                             blur: this._blur,
                             focus: this._focus,
@@ -860,97 +1213,141 @@
                     },
                     []
                 );
-            },
-            _renderLabel: function _renderLabel() {
-                var h = this.$createElement;
-
-                return h(
-                    'label',
-                    {
-                        attrs: { 'for': this.id }
-                    },
-                    [this.title]
-                );
-            },
-            _renderNote: function _renderNote() {
-                var h = this.$createElement;
-
-                return h(
-                    'small',
-                    { 'class': 'text-muted' },
-                    [this.note]
-                );
-            },
-            _renderSelect: function _renderSelect() {
-                var h = this.$createElement;
-
-                var options = this.options || [];
-
-                return h(
-                    'select',
-                    {
-                        on: {
-                            change: this._updateValue
-                        },
-                        'class': 'form-control', attrs: { multiple: this.multiple }
-                    },
-                    [options.map(function (_ref2) {
-                        var text = _ref2.text;
-                        var value = _ref2.value;
-                        return h(
-                            'option',
-                            {
-                                attrs: { value: value }
-                            },
-                            [text]
-                        );
-                    })]
-                );
-            },
-            _renderTextarea: function _renderTextarea() {
-                var h = this.$createElement;
-
-                return h(
-                    'textarea',
-                    {
-                        on: {
-                            keyup: this._updateValue
-                        },
-                        'class': 'form-control', directives: [{
-                            name: 'model',
-                            value: this.hiddenValue
-                        }]
-                    },
-                    []
-                );
-            },
-            _renderRadioCheck: function _renderRadioCheck() {
-                var h = this.$createElement;
-                return h();
-            },
-            _updateValue: function _updateValue(_ref3) {
-                var target = _ref3.target;
-
-                var value = target.value;
-                this.$emit('input', value);
             }
         },
         render: function render(h) {
             return h(
-                'fieldset',
-                { 'class': 'form-group' },
-                [this.title && this._renderLabel(), this._renderElement(), this.note && this._renderNote()]
+                'div',
+                { 'class': 'input-group' },
+                [this.beforeAddons.map(this._renderAddon), this._renderInput(), this.afterAddons.map(this._renderAddon)]
             );
         }
     };
 
+    var Jumbotron = {
+        name: 'jumbotron',
+        props: {
+            tag: {
+                type: String,
+                default: 'div'
+            },
+            fluid: {
+                type: Boolean,
+                default: false
+            }
+        },
+        computed: {
+            className: function className() {
+                return {
+                    'jumbotron': true,
+                    'jumbotron-fluid': this.fluid
+                };
+            }
+        },
+        render: function render(h) {
+            var Component = this.tag;
+            return h(
+                Component,
+                { 'class': this.className },
+                [this.$slots.default]
+            );
+        }
+    };
+
+    var ProgressBar = {
+        name: 'progress-bar',
+        props: {
+            striped: {
+                type: Boolean,
+                default: false
+            },
+            variant: {
+                type: String,
+                default: 'default'
+            },
+            value: {
+                type: Number,
+                required: true
+            },
+            max: {
+                type: Number,
+                required: true
+            }
+        },
+        computed: {
+            className: function className() {
+                var _ref;
+
+                return _ref = {
+                    progress: true
+                }, defineProperty(_ref, 'progress-' + this.variant, this.variant !== 'default'), defineProperty(_ref, 'progress-striped', this.striped), _ref;
+            }
+        },
+        render: function render(h) {
+            var fallbackStyle = {
+                width: Math.round(this.max * 100 / this.value) + '%'
+            };
+
+            return h(
+                'progress',
+                { 'class': 'progress', attrs: { value: this.value, max: this.max }
+                },
+                [h(
+                    'div',
+                    { 'class': 'progress' },
+                    [h(
+                        'span',
+                        { 'class': 'progress-bar', style: fallbackStyle },
+                        []
+                    )]
+                )]
+            );
+        }
+    };
+
+    var Tag = {
+        name: 'tag',
+        props: {
+            pill: {
+                type: Boolean,
+                default: false
+            },
+            variant: {
+                validator: inEnum.apply(undefined, toConsumableArray(BUTTON_VARIANTS)),
+                default: 'secondary'
+            }
+        },
+        computed: {
+            className: function className() {
+                return defineProperty({
+                    tag: true,
+                    'tag-pill': this.pill
+                }, 'tag-' + this.variant, true);
+            }
+        },
+        render: function render(h) {
+            return h(
+                'span',
+                { 'class': this.className },
+                [this.$slots.default]
+            );
+        }
+    };
+
+    exports.Alert = Alert;
+    exports.Breadcrumb = Breadcrumb;
     exports.Btn = Btn;
     exports.BtnGroup = BtnGroup;
     exports.BtnDropdown = BtnDropdown;
     exports.BtnToolbar = BtnToolbar;
     exports.Cols = Cols;
     exports.DropdownMenu = DropdownMenu;
-    exports.FormControl = FormControl;
+    exports.Forms = Forms;
+    exports.FormGroup = FormGroup;
+    exports.InputGroup = InputGroup;
+    exports.Jumbotron = Jumbotron;
+    exports.ProgressBar = ProgressBar;
+    exports.Tag = Tag;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 

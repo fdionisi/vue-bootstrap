@@ -1,9 +1,4 @@
-const DEVICE_SIZES = [
-  'lg',
-  'md',
-  'sm',
-  'xs'
-]
+import { colsClass } from './misc/utilities'
 
 export default {
     name: 'cols',
@@ -47,28 +42,7 @@ export default {
     },
     computed: {
         className() {
-            const classes = []
-            const elementProps = this.$options.props
-            DEVICE_SIZES.forEach(size => {
-                const popProp = (propSuffix, modifier) => {
-                    const propName = `${size}${propSuffix}`
-                    const propValue = this[propName]
-
-                    if (propValue)
-                        classes.push(`col-${size}${modifier}-${propValue}`)
-                }
-
-                popProp('', '')
-                popProp('Offset', '-offset')
-                popProp('Push', '-push')
-                popProp('Pull', '-pull')
-
-                const hiddenPropName = `${size}Hidden`
-                if (this[hiddenPropName])
-                    classes.push(`hidden-${size}`)
-            })
-
-            return classes
+            return colsClass(this)
         }
     },
     render(h) {

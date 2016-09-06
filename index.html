@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>Vue Bootstrap v4</title>
     <script type="text/javascript" src="/node_modules/vue/dist/vue.js"></script>
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha/css/bootstrap.min.css" media="screen" title="no title" charset="utf-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/css/bootstrap.min.css" integrity="sha384-2hfp1SzUoho7/TsGGGDaFdsuuDL0LX2hnUp6VkX3CUQ2K4K+xjboZdsXyp4oUHZj" crossorigin="anonymous">
 </head>
 <body>
     <div id="bootstrap">
@@ -26,7 +26,7 @@
         window.Test = new Vue({
             el: '#bootstrap',
             template: `
-                <div class="bootstrap-test">
+                <div class="bootstrap-test container">
                     <h1 class="bd-title" id="content"><a class="anchorjs-link " href="#content" aria-label="Anchor link for: content" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: inherit; position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Buttons</h1>
                     <h2 id="examples"><a class="anchorjs-link " href="#examples" aria-label="Anchor link for: examples" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: inherit; position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Examples</h2>
                     <p>Bootstrap includes six predefined button styles, each serving its own semantic purpose.</p>
@@ -187,11 +187,45 @@
                     <p>Bootstrap’s form controls expand on <a href="/content/reboot/#forms">our Rebooted form styles</a> with classes. Use these classes to opt into their customized displays for a more consistent rendering across browsers and devices. The example form below demonstrates common HTML form elements that receive updated styles from Bootstrap with additional classes.</p>
                     <p>Remember, since Bootstrap utilizes the HTML5 doctype, <strong>all inputs must have a <code class="highlighter-rouge">type</code> attribute</strong>.</p>
                     <div class="bd-example">
-                        <form-control v-model="vModel" :type="'email'" :title="'Email address'" :placeholder="'Enter email'" :note="'We will never share your email w ith anyone els e.'"></form-control>
-                        <form-control :type="'password'" :title="'Password'" :placeholder="'Password'"></form-control>
-                        <form-control :type="'select'" :title="'Example select'" :options="selectOptions"></form-control>
-                        <form-control :type="'select'" :multiple="true" :title="'Example multiple select'" :options="selectOptions"></form-control>
-                        <form-control :type="'textarea'" :title="'Example textarea'"></form-control>
+                        <form-group v-model="vModel" :type="'email'" :title="'Email address'" :placeholder="'Enter email'" :note="'We will never share your email w ith anyone els e.'"></form-group>
+                        <form-group :type="'password'" :title="'Password'" :placeholder="'Password'"></form-group>
+                        <form-group :type="'select'" :title="'Example select'" :options="selectOptions"></form-group>
+                        <form-group :type="'select'" :multiple="true" :title="'Example multiple select'" :options="selectOptions"></form-group>
+                        <form-group :type="'textarea'" :title="'Example textarea'"></form-group>
+                        <form-group :type="'radio'" title="Radio groups" :options="[{ value:'value1', text: 'Option one is this and that be sure to include why it s great' }, { value:'value2', text: 'Option two can be something else and selecting it will deselect option one' }, { value:'value3', text: 'Option three is disabled', disabled: true } ]"></form-group>
+                        <form-group :type="'checkbox'" title=" " :options="[{ value:'value1', text: 'Check me out', disabled: true } ]"></form-group>
+                    </div>
+                    <div class="bd-example">
+                        <form-group :row="{ xs: 10 }" type="text" value="Artisanal kale" title="email"></form-group>
+                    </div>
+                    <h2 id="input-group"><a class="anchorjs-link " href="#input-group" aria-label="Anchor link for: input-group" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: inherit; position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Input group</h2>
+                    <p>Bootstrap’s form controls expand on <a href="/content/reboot/#forms">our Rebooted form styles</a> with classes. Use these classes to opt into their customized displays for a more consistent rendering across browsers and devices. The example form below demonstrates common HTML form elements that receive updated styles from Bootstrap with additional classes.</p>
+                    <p>Remember, since Bootstrap utilizes the HTML5 doctype, <strong>all inputs must have a <code class="highlighter-rouge">type</code> attribute</strong>.</p>
+                    <div class="bd-example">
+                        <input-group type="text" placeholder="Username" :beforeAddons="['@']"></input-group>
+                        <input-group type="text" placeholder="Recipient's username" :afterAddons="['@example.com']"></input-group>
+                        <input-group type="number" :beforeAddons="['$']" :afterAddons="['.00']"></input-group>
+                        <input-group type="number" :beforeAddons="['$', '0.00']"></input-group>
+                    </div>
+                    <div class="bd-example">
+                        <div class="row">
+                            <cols :md="6" >
+                                <alert variant="success">
+                                    <strong>Test.</strong> This is a test
+                                </alert>
+                            </cols>
+                        </div>
+
+                        <breadcrumb :list="[{ text: 'Hei' }, { text: 'how' }, { text: 'are' }, { text: 'you' }, { text: '?' }]"></breadcrumb>
+
+                        <progress-bar variant="success" :value="20" :max="120"></progress-bar>
+
+                        <jumbotron>
+                            <h1>Ciao</h1>
+                            <p><tag variant="primary">Hei</tag> Questo è un test <tag variant="warning">!!!</tag></p>
+                        </jumbotron>
+
+                        <carousel :list="['data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22900%22%20height%3D%22500%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20900%20500%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_156f63e4e71%20text%20%7B%20fill%3Argba(255%2C255%2C255%2C.75)%3Bfont-weight%3Anormal%3Bfont-family%3AHelvetica%2C%20monospace%3Bfont-size%3A45pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_156f63e4e71%22%3E%3Crect%20width%3D%22900%22%20height%3D%22500%22%20fill%3D%22%23777%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%22334.8984375%22%20y%3D%22270.7%22%3E900x500%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E']"></carousel>
                     </div>
                 </div>
             `,

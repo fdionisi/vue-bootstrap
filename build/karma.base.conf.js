@@ -1,7 +1,7 @@
 var path = require('path')
 var webpack = require('webpack')
 var config = require('../config')
-var cssLoaders = require('./css-loaders')
+// var cssLoaders = require('./css-loaders')
 var projectRoot = path.resolve(__dirname, '../')
 var vue = require('vue-loader')
 
