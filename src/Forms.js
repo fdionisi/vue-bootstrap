@@ -1,3 +1,5 @@
+import { emitEvent } from './misc/utilities'
+
 export default {
     name: 'forms',
     props: {
@@ -6,19 +8,16 @@ export default {
             default: false
         }
     },
-    computed: {
-        className() {
-            return {
-                'form-inline': this.inline
-            }
-        }
-    },
     render(h) {
+        const className = {
+            'form-inline': this.inline
+        }
 
         return <form
-            class={this.className}
-            on-submit={(ev) => this.$emit('submit', ev, this)}
-            on-reset={(ev) => this.$emit('reset', ev, this)}>
+            class={ className }
+            on-submit={ emitEvent('submit', this) }
+            on-reset={ emitEvent('reset', this) }>
+
             { this.$slots.default }
         </form>
     }

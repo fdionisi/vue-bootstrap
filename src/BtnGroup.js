@@ -66,12 +66,12 @@ export default {
         },
         _renderDropdown(h, { title, text, options }) {
             // return wrapper w/ child dropdown component
-            return <btn-group
-                prop-callback={this.trigger}
-                prop-title={title}
-                prop-text={text}
-                prop-options={options}
-                prop-size={this.size} />
+            return <BtnDropdown
+                callback={this.trigger}
+                title={title}
+                text={text}
+                options={options}
+                size={this.size} />
         },
         _renderButton(h, button) {
             // get button's props
@@ -82,10 +82,10 @@ export default {
                 type={type}
                 class={button.class}
                 on-click={this.trigger}
-                prop-active={active}
-                prop-disabled={disabled}
-                prop-size={size}
-                prop-variant={variant}>
+                active={active}
+                disabled={disabled}
+                size={size}
+                variant={variant}>
                 { text }
             </Btn>
         },

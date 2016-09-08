@@ -46,10 +46,10 @@ export default {
     render(h) {
         const children = this.groups.map(
             ({name, callback, disabled, options}) => <BtnGroup
-                prop-name={name}
-                prop-callback={callback}
-                prop-disabled={disabled}
-                prop-options={options}
+                name={name}
+                callback={callback}
+                disabled={disabled}
+                options={options}
                 variant={this.variant}
                 size={this.size} />
         )

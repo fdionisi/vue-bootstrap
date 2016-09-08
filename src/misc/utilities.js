@@ -22,3 +22,5 @@ export const colsClass = (ctx={}, opposite=false) => {
         return classes
     }, [])
 }
+
+export const emitEvent = (eventName, ctx) => (ev) => ctx.$emit(eventName, ev, ctx)

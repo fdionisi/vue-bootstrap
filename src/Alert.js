@@ -1,5 +1,22 @@
 import { STATUS_VARIANTS } from './misc/constants'
+import { emitEvent } from './misc/utilities'
 import { inEnum } from './misc/validators'
+
+const closeRenderer = (h, ctx) => {
+
+    return <button
+        on-click={emitEvent('close', ctx)}
+        type="button"
+        class="close"
+        data-dismiss="alert"
+        aria-label="Close" >
+
+        <span aria-hidden="true">
+            &times;
+        </span>
+    </button>
+}
+
 export default {
     name: 'alert',
     props: {
@@ -12,33 +29,20 @@ export default {
             default: 'success'
         }
     },
-    computed: {
-        className() {
-            return {
-                alert: true,
-                [`alert-${this.variant}`]: true,
-                'alert-dismissible': this.dismissible
-            }
-        }
-    },
-    methods: {
-        _renderClose() {
-            const h = this.$createElement
-
-            return <button on-click={this.close} type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        },
-        closeClick(ev) {
-            this.$emit('close', ev, this)
-        }
-    },
     render(h) {
+        const className = {
+            alert: true,
+            [`alert-${this.variant}`]: true,
+            'alert-dismissible': this.dismissible
+        }
+
         return (
             <div
                 role="alert"
-                class={this.className}>
-                { this.dismissible && this._renderClose() }
+                class={className}>
+
+                { this.dismissible && closeRenderer(h, this) }
+
                 { this.$slots.default }
             </div>
         )

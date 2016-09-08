@@ -1,30 +1,30 @@
-import { BUTTON_VARIANTS } from './misc/constants'
+import { VARIANTS } from './misc/constants'
 import { inEnum } from './misc/validators'
 
 export default {
     name: 'tag',
+    functional: true,
     props: {
         pill: {
             type: Boolean,
             default: false
         },
         variant: {
-            validator: inEnum(...BUTTON_VARIANTS),
+            validator: inEnum(...VARIANTS),
             default: 'secondary'
         }
     },
-    computed: {
-        className() {
-            return {
-                tag: true,
-                'tag-pill': this.pill,
-                [`tag-${this.variant}`]: true
-            }
+    render(h, ctx) {
+        const { props, children } = ctx
+
+        const className = {
+            tag: true,
+            'tag-pill': props.pill,
+            [`tag-${props.variant}`]: true
         }
-    },
-    render(h) {
-        return <span class={this.className}>
-            { this.$slots.default }
+
+        return <span class={ className }>
+            { children }
         </span>
     }
 }

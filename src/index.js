@@ -12,6 +12,7 @@ import Forms from './Forms'
 import FormGroup from './FormGroup'
 import InputGroup from './InputGroup'
 import Jumbotron from './Jumbotron'
+import ListGroup from './ListGroup'
 import ProgressBar from './ProgressBar'
 import Tag from './Tag'
 
@@ -30,6 +31,7 @@ export {
 	FormGroup,
     InputGroup,
     Jumbotron,
+    ListGroup,
     ProgressBar,
     Tag
 }

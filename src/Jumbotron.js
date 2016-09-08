@@ -1,5 +1,6 @@
 export default {
     name: 'jumbotron',
+    functional: true,
     props: {
         tag: {
             type: String,
@@ -10,18 +11,16 @@ export default {
             default: false
         }
     },
-    computed: {
-        className() {
-            return {
-                'jumbotron': true,
-                'jumbotron-fluid': this.fluid
-            }
+    render(h, { props, children }) {
+        const Component = props.tag
+
+        const className = {
+            'jumbotron': true,
+            'jumbotron-fluid': props.fluid
         }
-    },
-    render(h) {
-        const Component = this.tag
-        return <Component class={this.className}>
-            { this.$slots.default }
+
+        return <Component class={className}>
+            { children }
         </Component>
     }
 }

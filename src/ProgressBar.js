@@ -1,5 +1,6 @@
 export default {
     name: 'progress-bar',
+    functional: true,
     props: {
         striped: {
             type: Boolean,
@@ -18,21 +19,18 @@ export default {
             required: true
         }
     },
-    computed: {
-        className() {
-            return {
-                progress: true,
-                [`progress-${this.variant}`]: this.variant !== 'default',
-                'progress-striped': this.striped
-            }
-        }
-    },
-    render(h) {
-        const fallbackStyle = {
-            width: Math.round((this.value * 100)/this.max) + '%'
+    render(h, { props }) {
+        const className = {
+            progress: true,
+            [`progress-${props.variant}`]: props.variant !== 'default',
+            'progress-striped': props.striped
         }
 
-        return <progress class={this.className} value={this.value} max={this.max}>
+        const fallbackStyle = {
+            width: Math.round((props.value * 100) / props.max) + '%'
+        }
+
+        return <progress class={className} value={props.value} max={props.max}>
             <div class="progress">
                 <span class="progress-bar" style={fallbackStyle}></span>
             </div>

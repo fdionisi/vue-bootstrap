@@ -1,8 +1,6 @@
-function findParent(target, el={}) {
-    return target === el
-        ? true
-        : !!el.parentElement && findParent(target, el.parentElement)
-}
+const findParent = (target, el={}) => target === el
+    ? true
+    : !!el.parentElement && findParent(target, el.parentElement)
 
 export default {
     name: 'dropdown-menu',
@@ -26,15 +24,19 @@ export default {
         _renderLink(h, item) {
             const on = {}
 
-            // click event
             if (item.click) on.click = !item.disabled
                 ? item.click
                 : (ev) => ev.preventDefault()
 
-            // return link/button tag
+
+            const className = {
+                'dropdown-item': true,
+                disabled: item.disabled
+            }
+
             return <a
                 href={item.href || '#'}
-                class={{ 'dropdown-item': true, disabled: item.disabled }}
+                class={className}
                 { ...{ on } }>
                 { item.text }
             </a>

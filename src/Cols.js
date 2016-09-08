@@ -2,6 +2,7 @@ import { colsClass } from './misc/utilities'
 
 export default {
     name: 'cols',
+    functional: true,
     props: {
         tag: {
             type: String,
@@ -40,15 +41,13 @@ export default {
         mdPull: Number,
         lgPull: Number
     },
-    computed: {
-        className() {
-            return colsClass(this)
-        }
-    },
-    render(h) {
-        const Component = this.tag
-        return <Component class={this.className}>
-            { this.$slots.default }
+    render(h, { children, props }) {
+        const Component = props.tag
+
+        const className = colsClass(props)
+
+        return <Component class={className}>
+            { children }
         </Component>
     }
 }

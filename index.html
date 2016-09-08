@@ -11,7 +11,6 @@
     </div>
 
     <script type="text/javascript">
-        console.log(Object.keys(VueBootstrap));
         var componentsName = Object.keys(VueBootstrap);
         for (var i = 0; i < componentsName.length; i++) {
             var name = componentsName[i]
@@ -187,7 +186,7 @@
                     <p>Bootstrap’s form controls expand on <a href="/content/reboot/#forms">our Rebooted form styles</a> with classes. Use these classes to opt into their customized displays for a more consistent rendering across browsers and devices. The example form below demonstrates common HTML form elements that receive updated styles from Bootstrap with additional classes.</p>
                     <p>Remember, since Bootstrap utilizes the HTML5 doctype, <strong>all inputs must have a <code class="highlighter-rouge">type</code> attribute</strong>.</p>
                     <div class="bd-example">
-                        <form-group v-model="vModel" :type="'email'" :title="'Email address'" :placeholder="'Enter email'" :note="'We will never share your email w ith anyone els e.'"></form-group>
+                        <form-group v-model="vModel" :type="'email'" :title="'Email address'" :placeholder="'Enter email'" :note="'We will never share your email with anyone else.'"></form-group>
                         <form-group :type="'password'" :title="'Password'" :placeholder="'Password'"></form-group>
                         <form-group :type="'select'" :title="'Example select'" :options="selectOptions"></form-group>
                         <form-group :type="'select'" :multiple="true" :title="'Example multiple select'" :options="selectOptions"></form-group>
@@ -225,7 +224,10 @@
                             <p><tag variant="primary">Hei</tag> Questo è un test <tag variant="warning">!!!</tag></p>
                         </jumbotron>
 
-                        <carousel :list="['data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22900%22%20height%3D%22500%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20900%20500%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_156f63e4e71%20text%20%7B%20fill%3Argba(255%2C255%2C255%2C.75)%3Bfont-weight%3Anormal%3Bfont-family%3AHelvetica%2C%20monospace%3Bfont-size%3A45pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_156f63e4e71%22%3E%3Crect%20width%3D%22900%22%20height%3D%22500%22%20fill%3D%22%23777%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%22334.8984375%22%20y%3D%22270.7%22%3E900x500%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E']"></carousel>
+                        <list-group variant="info" :list="[{ heading: 'test heading', text: 'test text' }, { text: 'test text' }, { children: ['test children', ' - test small'], variant: 'danger' }]">
+                            <h1>Ciao</h1>
+                            <p><tag variant="primary">Hei</tag> Questo è un test <tag variant="warning">!!!</tag></p>
+                        </list-group>
                     </div>
                 </div>
             `,

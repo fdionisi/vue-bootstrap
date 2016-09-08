@@ -17,6 +17,36 @@
 
     var DEVICE_SIZES = ['lg', 'md', 'sm', 'xs'];
 
+    var colsClass = function colsClass() {
+        var ctx = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+        var opposite = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+
+        return DEVICE_SIZES.reduce(function (classes, size) {
+            var popProp = function popProp(propSuffix, modifier) {
+                var propName = '' + size + propSuffix;
+                var propValue = opposite ? 12 - ctx[propName] : ctx[propName];
+
+                if (propValue) classes.push('col-' + size + modifier + '-' + propValue);
+            };
+
+            popProp('', '');
+            popProp('Offset', '-offset');
+            popProp('Push', '-push');
+            popProp('Pull', '-pull');
+
+            var hiddenPropName = size + 'Hidden';
+            if (ctx[hiddenPropName]) classes.push('hidden-' + size);
+
+            return classes;
+        }, []);
+    };
+
+    var emitEvent = function emitEvent(eventName, ctx) {
+        return function (ev) {
+            return ctx.$emit(eventName, ev, ctx);
+        };
+    };
+
     function inEnum() {
         for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
             args[_key] = arguments[_key];
@@ -52,6 +82,30 @@
       }
     };
 
+    var closeRenderer = function closeRenderer(h, ctx) {
+
+        return h(
+            'button',
+            {
+                on: {
+                    click: emitEvent('close', ctx)
+                },
+                attrs: {
+                    type: 'button',
+
+                    'data-dismiss': 'alert',
+                    'aria-label': 'Close' },
+                'class': 'close' },
+            [h(
+                'span',
+                {
+                    attrs: { 'aria-hidden': 'true' }
+                },
+                ['×']
+            )]
+        );
+    };
+
     var Alert = {
         name: 'alert',
         props: {
@@ -64,55 +118,49 @@
                 default: 'success'
             }
         },
-        computed: {
-            className: function className() {
-                var _ref;
-
-                return _ref = {
-                    alert: true
-                }, defineProperty(_ref, 'alert-' + this.variant, true), defineProperty(_ref, 'alert-dismissible', this.dismissible), _ref;
-            }
-        },
-        methods: {
-            _renderClose: function _renderClose() {
-                var h = this.$createElement;
-
-                return h(
-                    'button',
-                    {
-                        on: {
-                            click: this.close
-                        },
-                        attrs: { type: 'button', 'data-dismiss': 'alert', 'aria-label': 'Close' },
-                        'class': 'close' },
-                    [h(
-                        'span',
-                        {
-                            attrs: { 'aria-hidden': 'true' }
-                        },
-                        ['×']
-                    )]
-                );
-            },
-            closeClick: function closeClick(ev) {
-                this.$emit('close', ev, this);
-            }
-        },
         render: function render(h) {
+            var _className;
+
+            var className = (_className = {
+                alert: true
+            }, defineProperty(_className, 'alert-' + this.variant, true), defineProperty(_className, 'alert-dismissible', this.dismissible), _className);
+
             return h(
                 'div',
                 {
                     attrs: {
                         role: 'alert'
                     },
-                    'class': this.className },
-                [this.dismissible && this._renderClose(), this.$slots.default]
+                    'class': className },
+                [this.dismissible && closeRenderer(h, this), this.$slots.default]
             );
         }
     };
 
+    var crumbRenderer = function crumbRenderer(h) {
+        return function (item, index, list) {
+            var className = ['breadcrumb-item'];
+            var lastPosition = list.length - 1;
+
+            if (index === lastPosition) className.push('active');
+
+            return h(
+                'li',
+                { 'class': className },
+                [h(
+                    'a',
+                    {
+                        attrs: { href: item.href || '#' }
+                    },
+                    [item.text]
+                )]
+            );
+        };
+    };
+
     var Breadcrumb = {
         name: 'breadcrumb',
+        functional: true,
         props: {
             list: {
                 type: Array,
@@ -121,36 +169,13 @@
                 }
             }
         },
-        computed: {
-            lastPosition: function lastPosition() {
-                return this.list.length - 1;
-            }
-        },
-        methods: {
-            _renderCrumb: function _renderCrumb(item, index) {
-                var h = this.$createElement;
-                var className = ['breadcrumb-item'];
+        render: function render(h, _ref) {
+            var props = _ref.props;
 
-                if (index === this.lastPosition) className.push('active');
-
-                return h(
-                    'li',
-                    { 'class': className },
-                    [h(
-                        'a',
-                        {
-                            attrs: { href: item.href || '#' }
-                        },
-                        [item.text]
-                    )]
-                );
-            }
-        },
-        render: function render(h) {
             return h(
                 'ol',
                 { 'class': 'breadcrumb' },
-                [this.list.map(this._renderCrumb)]
+                [props.list.map(crumbRenderer(h))]
             );
         }
     };
@@ -288,11 +313,10 @@
         }
     };
 
-    function findParent(target) {
+    var findParent = function findParent(target) {
         var el = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
         return target === el ? true : !!el.parentElement && findParent(target, el.parentElement);
-    }
+    };
 
     var DropdownMenu = {
         name: 'dropdown-menu',
@@ -323,13 +347,18 @@
                     return ev.preventDefault();
                 };
 
+                var className = {
+                    'dropdown-item': true,
+                    disabled: item.disabled
+                };
+
                 return h(
                     'a',
                     _mergeJSXProps([{
                         attrs: {
                             href: item.href || '#'
                         },
-                        'class': { 'dropdown-item': true, disabled: item.disabled }
+                        'class': className
                     }, { on: on }]),
                     [item.text]
                 );
@@ -679,14 +708,14 @@
                 var options = _ref2.options;
 
                 return h(
-                    'btn-group',
+                    BtnDropdown,
                     {
                         attrs: {
-                            'prop-callback': this.trigger,
-                            'prop-title': title,
-                            'prop-text': text,
-                            'prop-options': options,
-                            'prop-size': this.size }
+                            callback: this.trigger,
+                            title: title,
+                            text: text,
+                            options: options,
+                            size: this.size }
                     },
                     []
                 );
@@ -709,10 +738,10 @@
                         attrs: {
                             type: type,
 
-                            'prop-active': active,
-                            'prop-disabled': disabled,
-                            'prop-size': size,
-                            'prop-variant': variant },
+                            active: active,
+                            disabled: disabled,
+                            size: size,
+                            variant: variant },
                         'class': button.class,
                         on: {
                             click: this.trigger
@@ -780,10 +809,10 @@
                     BtnGroup,
                     {
                         attrs: {
-                            'prop-name': name,
-                            'prop-callback': callback,
-                            'prop-disabled': disabled,
-                            'prop-options': options,
+                            name: name,
+                            callback: callback,
+                            disabled: disabled,
+                            options: options,
                             variant: _this.variant,
                             size: _this.size }
                     },
@@ -946,32 +975,9 @@
         }
     };
 
-    var colsClass = function colsClass() {
-        var ctx = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-        var opposite = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-
-        return DEVICE_SIZES.reduce(function (classes, size) {
-            var popProp = function popProp(propSuffix, modifier) {
-                var propName = '' + size + propSuffix;
-                var propValue = opposite ? 12 - ctx[propName] : ctx[propName];
-
-                if (propValue) classes.push('col-' + size + modifier + '-' + propValue);
-            };
-
-            popProp('', '');
-            popProp('Offset', '-offset');
-            popProp('Push', '-push');
-            popProp('Pull', '-pull');
-
-            var hiddenPropName = size + 'Hidden';
-            if (ctx[hiddenPropName]) classes.push('hidden-' + size);
-
-            return classes;
-        }, []);
-    };
-
     var Cols = {
         name: 'cols',
+        functional: true,
         props: {
             tag: {
                 type: String,
@@ -1010,17 +1016,18 @@
             mdPull: Number,
             lgPull: Number
         },
-        computed: {
-            className: function className() {
-                return colsClass(this);
-            }
-        },
-        render: function render(h) {
-            var Component = this.tag;
+        render: function render(h, _ref) {
+            var children = _ref.children;
+            var props = _ref.props;
+
+            var Component = props.tag;
+
+            var className = colsClass(props);
+
             return h(
                 Component,
-                { 'class': this.className },
-                [this.$slots.default]
+                { 'class': className },
+                [children]
             );
         }
     };
@@ -1033,27 +1040,18 @@
                 default: false
             }
         },
-        computed: {
-            className: function className() {
-                return {
-                    'form-inline': this.inline
-                };
-            }
-        },
         render: function render(h) {
-            var _this = this;
+            var className = {
+                'form-inline': this.inline
+            };
 
             return h(
                 'form',
                 {
-                    'class': this.className,
+                    'class': className,
                     on: {
-                        submit: function submit(ev) {
-                            return _this.$emit('submit', ev, _this);
-                        },
-                        reset: function reset(ev) {
-                            return _this.$emit('reset', ev, _this);
-                        }
+                        submit: emitEvent('submit', this),
+                        reset: emitEvent('reset', this)
                     }
                 },
                 [this.$slots.default]
@@ -1421,6 +1419,7 @@
 
     var Jumbotron = {
         name: 'jumbotron',
+        functional: true,
         props: {
             tag: {
                 type: String,
@@ -1431,26 +1430,102 @@
                 default: false
             }
         },
-        computed: {
-            className: function className() {
-                return {
-                    'jumbotron': true,
-                    'jumbotron-fluid': this.fluid
-                };
+        render: function render(h, _ref) {
+            var props = _ref.props;
+            var children = _ref.children;
+
+            var Component = props.tag;
+
+            var className = {
+                'jumbotron': true,
+                'jumbotron-fluid': props.fluid
+            };
+
+            return h(
+                Component,
+                { 'class': className },
+                [children]
+            );
+        }
+    };
+
+    var listItemRenderer = function listItemRenderer(h, ctx) {
+        return function (item) {
+            var _className;
+
+            var Component = ctx.action ? 'button' : 'ul';
+
+            var variant = item.variant || ctx.variant;
+
+            var className = (_className = {
+                'list-group-item': true,
+                'list-group-item-action': ctx.action
+            }, defineProperty(_className, 'list-group-item-' + variant, variant), defineProperty(_className, 'disabled', item.disabled), _className);
+
+            return h(
+                Component,
+                {
+                    'class': className,
+                    attrs: { 'data-value': item.value
+                    },
+                    on: {
+                        click: ctx.emitClick
+                    }
+                },
+                [item.heading && h(
+                    'h5',
+                    { 'class': 'list-group-item-heading' },
+                    [item.heading]
+                ), item.text && h(
+                    'p',
+                    { 'class': 'list-group-item-text' },
+                    [item.text]
+                ), item.children]
+            );
+        };
+    };
+
+    var ListGroup = {
+        name: 'list-group',
+        props: {
+            variant: String,
+            action: Boolean,
+            list: {
+                type: Array,
+                default: function _default() {
+                    return [];
+                }
+            },
+            tag: {
+                type: String,
+                default: 'ul'
+            }
+        },
+        methods: {
+            emitClick: function emitClick(ev) {
+                var _ev$target = ev.target;
+                var target = _ev$target === undefined ? {} : _ev$target;
+                var _target$dataset = target.dataset;
+                var dataset = _target$dataset === undefined ? {} : _target$dataset;
+
+
+                dataset.value && this.$emit('click', ev, dataset.value);
             }
         },
         render: function render(h) {
-            var Component = this.tag;
+            var Component = this.action ? 'div' : this.tag;
+
             return h(
                 Component,
-                { 'class': this.className },
-                [this.$slots.default]
+                { 'class': 'list-group' },
+                [this.list.map(listItemRenderer(h, this))]
             );
         }
     };
 
     var ProgressBar = {
         name: 'progress-bar',
+        functional: true,
         props: {
             striped: {
                 type: Boolean,
@@ -1469,23 +1544,22 @@
                 required: true
             }
         },
-        computed: {
-            className: function className() {
-                var _ref;
+        render: function render(h, _ref) {
+            var _className;
 
-                return _ref = {
-                    progress: true
-                }, defineProperty(_ref, 'progress-' + this.variant, this.variant !== 'default'), defineProperty(_ref, 'progress-striped', this.striped), _ref;
-            }
-        },
-        render: function render(h) {
+            var props = _ref.props;
+
+            var className = (_className = {
+                progress: true
+            }, defineProperty(_className, 'progress-' + props.variant, props.variant !== 'default'), defineProperty(_className, 'progress-striped', props.striped), _className);
+
             var fallbackStyle = {
-                width: Math.round(this.value * 100 / this.max) + '%'
+                width: Math.round(props.value * 100 / props.max) + '%'
             };
 
             return h(
                 'progress',
-                { 'class': this.className, attrs: { value: this.value, max: this.max }
+                { 'class': className, attrs: { value: props.value, max: props.max }
                 },
                 [h(
                     'div',
@@ -1502,29 +1576,31 @@
 
     var Tag = {
         name: 'tag',
+        functional: true,
         props: {
             pill: {
                 type: Boolean,
                 default: false
             },
             variant: {
-                validator: inEnum.apply(undefined, toConsumableArray(BUTTON_VARIANTS)),
+                validator: inEnum.apply(undefined, toConsumableArray(VARIANTS)),
                 default: 'secondary'
             }
         },
-        computed: {
-            className: function className() {
-                return defineProperty({
-                    tag: true,
-                    'tag-pill': this.pill
-                }, 'tag-' + this.variant, true);
-            }
-        },
-        render: function render(h) {
+        render: function render(h, ctx) {
+            var props = ctx.props;
+            var children = ctx.children;
+
+
+            var className = defineProperty({
+                tag: true,
+                'tag-pill': props.pill
+            }, 'tag-' + props.variant, true);
+
             return h(
                 'span',
-                { 'class': this.className },
-                [this.$slots.default]
+                { 'class': className },
+                [children]
             );
         }
     };
@@ -1542,6 +1618,7 @@
     exports.FormGroup = FormGroup;
     exports.InputGroup = InputGroup;
     exports.Jumbotron = Jumbotron;
+    exports.ListGroup = ListGroup;
     exports.ProgressBar = ProgressBar;
     exports.Tag = Tag;
 
