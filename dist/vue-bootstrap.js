@@ -1786,6 +1786,17 @@
     var Navbar = {
         name: 'navbar',
         props: {
+            bg: {
+                type: String,
+                default: 'faded'
+            },
+            luminosity: {
+                type: String,
+                default: 'light'
+            },
+            fullWidth: Boolean,
+            fixedTop: Boolean,
+            fixedBottom: Boolean,
             brand: {
                 type: Object,
                 default: function _default() {
@@ -1800,9 +1811,14 @@
             }
         },
         render: function render(h) {
-            var className = {
-                navbar: true
-            };
+            var _className;
+
+            var className = (_className = {
+                navbar: true,
+                'navbar-full': this.fullWidth,
+                'navbar-fixed-top': this.fixedTop,
+                'navbar-fixed-bottom': !this.fixedTop && this.fixedBottom
+            }, defineProperty(_className, 'navbar-' + this.luminosity, true), defineProperty(_className, 'bg-' + this.bg, true), _className);
 
             return h(
                 'nav',
@@ -1820,7 +1836,7 @@
                     { 'class': 'navbar-nav', attrs: { list: this.list }
                     },
                     []
-                )]
+                ), this.$slots.default]
             );
         }
     };
