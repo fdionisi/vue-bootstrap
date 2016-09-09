@@ -230,7 +230,12 @@
                         </list-group>
 
                         <navs :stacked="true" :pills="true" :list="[{ text: 'test' }, { text: 'test2' }, { text: 'test3' }, btnDropdownOption]" />
-                        <navbar :brand="{ text: 'Navbar' }" :list="[{ text: 'test' }, { text: 'test2' }, { text: 'test3' }, btnDropdownOption]" />
+                        <navbar :brand="{ text: 'Navbar' }" :list="[{ text: 'test' }, { text: 'test2' }, { text: 'test3' }, btnDropdownOption]">
+                            <forms class="pull-xs-right" :inline="true">
+                                <form-group type="text" placeholder="Search" />
+                                <btn variant="success" :outline="true" type="submit">Search</button>
+                            </forms>
+                        </navbar>
                     </div>
                 </div>
             `,
