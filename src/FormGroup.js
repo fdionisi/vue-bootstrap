@@ -1,4 +1,4 @@
-import { colsClass } from './misc/utilities'
+import { emitEvent, colsClass } from './misc/utilities'
 
 export default {
     name: 'form-group',
@@ -52,10 +52,6 @@ export default {
         }
     },
     methods: {
-        _blur(ev) { this.$emit('blur', ev, this) },
-        _focus(ev) { this.$emit('focus', ev, this) },
-        _keydown(ev) { this.$emit('keydown', ev, this) },
-        _keyup(ev) { this._updateValue(ev); this.$emit('keyup', ev, this) },
         _renderElement() {
             // define witch input
             switch (this.type) {
@@ -69,7 +65,7 @@ export default {
             }
         },
         _renderStatic() {
-            return <p class="form-control-static">{ this.placeholder }</p>
+            return <p on-click={this._click} class="form-control-static">{ this.placeholder }</p>
         },
         _renderInput() {
             const h = this.$createElement
@@ -86,12 +82,19 @@ export default {
         _renderNormalInput() {
             const h = this.$createElement
 
+            const emitKeyup = emitEvent('keyup', this)
+            const onKeyup = (ev) => {
+                this._updateValue(ev)
+                emitKeyup(ev)
+            }
+
             return <input
                 class='form-control'
-                on-blur={this._blur}
-                on-focus={this._focus}
-                on-keydown={this._keydown}
-                on-keyup={this._keyup}
+                on-click={emitEvent('click', this)}
+                on-blur={emitEvent('blur', this)}
+                on-focus={emitEvent('focus', this)}
+                on-keydown={emitEvent('keydown', this)}
+                on-keyup={onKeyup}
                 type={this.type}
                 id={this.id}
                 placeholder={this.placeholder} />
@@ -126,8 +129,15 @@ export default {
 
             const options = this.options || [];
 
+            const emitSelect = emitEvent('select', this)
+            const onSelect = (ev) => {
+                this._updateValue(ev)
+                emitSelect(ev)
+            }
+
             return <select
-                on-change={this._updateValue}
+                on-click={emitEvent('click', this)}
+                on-select={onSelect}
                 class='form-control'
                 multiple={this.multiple}>
 
@@ -137,14 +147,23 @@ export default {
         _renderOption({text, value}) {
             const h = this.$createElement
 
-            return <option value={value}>{ text }</option>
+            return <option on-click={emitEvent('option-click', this)} value={value}>{ text }</option>
         },
         _renderTextarea() {
             const h = this.$createElement
 
+            const emitKeyup = emitEvent('keyup', this)
+            const onKeyup = (ev) => {
+                this._updateValue(ev)
+                emitKeyup(ev)
+            }
+
             return <textarea
-                v-model={this.hiddenValue}
-                on-keyup={this._updateValue}
+                on-click={emitEvent('click', this)}
+                on-blur={emitEvent('blur', this)}
+                on-focus={emitEvent('focus', this)}
+                on-keydown={emitEvent('keydown', this)}
+                on-keyup={onKeyup}
                 class="form-control">
 
             </textarea>
@@ -152,10 +171,17 @@ export default {
         _renderRadioCheck() {
             const h = this.$createElement
 
+            const emitClick = emitEvent('click', this)
+            const onClick = (ev) => {
+                this._updateValue(ev)
+                emitClick(ev)
+            }
+
             return this.options.map((option) => (
                 <div class={this._radioCheckClass(option)}>
                     <label class={this.formCheck ? 'form-check-label' : ''}>
                         <input
+                            on-click={onClick}
                             class={this.formCheck ? 'form-check-input' : ''}
                             type={this.type}
                             name={this.id}
@@ -179,7 +205,6 @@ export default {
         },
         _updateValue({ target }) {
             const value = target.value
-
             this.$emit('input', value)
         }
     },

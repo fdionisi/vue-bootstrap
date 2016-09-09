@@ -42,8 +42,12 @@
     };
 
     var emitEvent = function emitEvent(eventName, ctx) {
+        for (var _len = arguments.length, extraArgs = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
+            extraArgs[_key - 2] = arguments[_key];
+        }
+
         return function (ev) {
-            return ctx.$emit(eventName, ev, ctx);
+            return ctx.$emit.apply(ctx, [eventName, ev, ctx].concat(extraArgs));
         };
     };
 
@@ -82,28 +86,42 @@
       }
     };
 
-    var closeRenderer = function closeRenderer(h, ctx) {
-
-        return h(
-            'button',
-            {
-                on: {
-                    click: emitEvent('close', ctx)
-                },
-                attrs: {
-                    type: 'button',
-
-                    'data-dismiss': 'alert',
-                    'aria-label': 'Close' },
-                'class': 'close' },
-            [h(
-                'span',
+    var CloseBtn = {
+        functional: true,
+        props: {
+            label: {
+                type: String,
+                default: 'Close'
+            },
+            clicked: {
+                type: Function,
+                default: function _default() {
+                    return function () {};
+                }
+            }
+        },
+        render: function render(h, _ref) {
+            var props = _ref.props;
+            return h(
+                'button',
                 {
-                    attrs: { 'aria-hidden': 'true' }
-                },
-                ['×']
-            )]
-        );
+                    on: {
+                        click: props.clicked
+                    },
+                    attrs: {
+                        'aria-label': props.label,
+                        type: 'button'
+                    },
+                    'class': 'close' },
+                [h(
+                    'span',
+                    {
+                        attrs: { 'aria-hidden': 'true' }
+                    },
+                    ['×']
+                )]
+            );
+        }
     };
 
     var Alert = {
@@ -132,17 +150,43 @@
                         role: 'alert'
                     },
                     'class': className },
-                [this.dismissible && closeRenderer(h, this), this.$slots.default]
+                [this.dismissible && h(
+                    CloseBtn,
+                    {
+                        attrs: { clicked: emitEvent('close', this) }
+                    },
+                    []
+                ), this.$slots.default]
             );
         }
     };
 
-    var crumbRenderer = function crumbRenderer(h) {
-        return function (item, index, list) {
-            var className = ['breadcrumb-item'];
-            var lastPosition = list.length - 1;
+    var Crumb = {
+        functional: true,
+        props: {
+            disabled: {
+                type: Boolean,
+                default: false
+            },
+            isLast: {
+                type: Boolean,
+                default: false
+            },
+            text: String,
+            href: String,
+            clicked: {
+                type: Function,
+                default: function _default() {
+                    return function () {};
+                }
+            }
+        },
+        render: function render(h, _ref) {
+            var props = _ref.props;
 
-            if (index === lastPosition) className.push('active');
+            var className = ['breadcrumb-item'];
+
+            if (props.isLast) className.push('active');
 
             return h(
                 'li',
@@ -150,17 +194,19 @@
                 [h(
                     'a',
                     {
-                        attrs: { href: item.href || '#' }
+                        on: {
+                            click: props.clicked
+                        },
+                        attrs: { href: props.href || '#' }
                     },
-                    [item.text]
+                    [props.text]
                 )]
             );
-        };
+        }
     };
 
     var Breadcrumb = {
         name: 'breadcrumb',
-        functional: true,
         props: {
             list: {
                 type: Array,
@@ -169,13 +215,28 @@
                 }
             }
         },
-        render: function render(h, _ref) {
-            var props = _ref.props;
+        render: function render(h) {
+            var _this = this;
+
+            var lastPosition = this.list.length - 1;
 
             return h(
                 'ol',
                 { 'class': 'breadcrumb' },
-                [props.list.map(crumbRenderer(h))]
+                [this.list.map(function (item, index) {
+                    return h(
+                        Crumb,
+                        {
+                            attrs: {
+                                disabled: item.disabled,
+                                'is-last': index === lastPosition,
+                                clicked: emitEvent('click', _this, item, index),
+                                href: item.href,
+                                text: item.text }
+                        },
+                        []
+                    );
+                })]
             );
         }
     };
@@ -283,11 +344,11 @@
             }
         },
         render: function render(h) {
-            var Tag = this.tag;
+            var Component = this.tag;
             var attrs = this.tag === 'button' ? this._buttonAttrs() : this.tag === 'a' ? this._linkAttrs() : this._inputAttrs();
 
             return h(
-                Tag,
+                Component,
                 _mergeJSXProps([{
                     on: {
                         click: this.clicked
@@ -556,8 +617,7 @@
                         },
 
                         'class': 'dropdown-toggle',
-                        attrs: { 'data-toggle': 'dropdown',
-                            'aria-haspopup': 'true',
+                        attrs: { 'aria-haspopup': 'true',
                             'aria-expanded': this.visibility,
                             active: this.visibility,
                             variant: this.variant,
@@ -1113,18 +1173,6 @@
             }
         },
         methods: {
-            _blur: function _blur(ev) {
-                this.$emit('blur', ev, this);
-            },
-            _focus: function _focus(ev) {
-                this.$emit('focus', ev, this);
-            },
-            _keydown: function _keydown(ev) {
-                this.$emit('keydown', ev, this);
-            },
-            _keyup: function _keyup(ev) {
-                this._updateValue(ev);this.$emit('keyup', ev, this);
-            },
             _renderElement: function _renderElement() {
                 switch (this.type) {
                     case 'slot':
@@ -1145,7 +1193,11 @@
             _renderStatic: function _renderStatic() {
                 return h(
                     'p',
-                    { 'class': 'form-control-static' },
+                    {
+                        on: {
+                            click: this._click
+                        },
+                        'class': 'form-control-static' },
                     [this.placeholder]
                 );
             },
@@ -1164,17 +1216,26 @@
                 );
             },
             _renderNormalInput: function _renderNormalInput() {
+                var _this = this;
+
                 var h = this.$createElement;
+
+                var emitKeyup = emitEvent('keyup', this);
+                var onKeyup = function onKeyup(ev) {
+                    _this._updateValue(ev);
+                    emitKeyup(ev);
+                };
 
                 return h(
                     'input',
                     {
                         'class': 'form-control',
                         on: {
-                            blur: this._blur,
-                            focus: this._focus,
-                            keydown: this._keydown,
-                            keyup: this._keyup
+                            click: emitEvent('click', this),
+                            blur: emitEvent('blur', this),
+                            focus: emitEvent('focus', this),
+                            keydown: emitEvent('keydown', this),
+                            keyup: onKeyup
                         },
                         attrs: {
                             type: this.type,
@@ -1218,15 +1279,24 @@
                 );
             },
             _renderSelect: function _renderSelect() {
+                var _this2 = this;
+
                 var h = this.$createElement;
 
                 var options = this.options || [];
+
+                var emitSelect = emitEvent('select', this);
+                var onSelect = function onSelect(ev) {
+                    _this2._updateValue(ev);
+                    emitSelect(ev);
+                };
 
                 return h(
                     'select',
                     {
                         on: {
-                            change: this._updateValue
+                            click: emitEvent('click', this),
+                            select: onSelect
                         },
 
                         'class': 'form-control',
@@ -1244,23 +1314,34 @@
                 return h(
                     'option',
                     {
+                        on: {
+                            click: emitEvent('option-click', this)
+                        },
                         attrs: { value: value }
                     },
                     [text]
                 );
             },
             _renderTextarea: function _renderTextarea() {
+                var _this3 = this;
+
                 var h = this.$createElement;
+
+                var emitKeyup = emitEvent('keyup', this);
+                var onKeyup = function onKeyup(ev) {
+                    _this3._updateValue(ev);
+                    emitKeyup(ev);
+                };
 
                 return h(
                     'textarea',
                     {
-                        directives: [{
-                            name: 'model',
-                            value: this.hiddenValue
-                        }],
                         on: {
-                            keyup: this._updateValue
+                            click: emitEvent('click', this),
+                            blur: emitEvent('blur', this),
+                            focus: emitEvent('focus', this),
+                            keydown: emitEvent('keydown', this),
+                            keyup: onKeyup
                         },
 
                         'class': 'form-control' },
@@ -1268,26 +1349,36 @@
                 );
             },
             _renderRadioCheck: function _renderRadioCheck() {
-                var _this = this;
+                var _this4 = this;
 
                 var h = this.$createElement;
+
+                var emitClick = emitEvent('click', this);
+                var onClick = function onClick(ev) {
+                    _this4._updateValue(ev);
+                    emitClick(ev);
+                };
 
                 return this.options.map(function (option) {
                     return h(
                         'div',
-                        { 'class': _this._radioCheckClass(option) },
+                        { 'class': _this4._radioCheckClass(option) },
                         [h(
                             'label',
-                            { 'class': _this.formCheck ? 'form-check-label' : '' },
+                            { 'class': _this4.formCheck ? 'form-check-label' : '' },
                             [h(
                                 'input',
                                 {
-                                    'class': _this.formCheck ? 'form-check-input' : '',
-                                    attrs: { type: _this.type,
-                                        name: _this.id,
+                                    on: {
+                                        click: onClick
+                                    },
+
+                                    'class': _this4.formCheck ? 'form-check-input' : '',
+                                    attrs: { type: _this4.type,
+                                        name: _this4.id,
                                         id: option.id,
                                         value: option.value,
-                                        checkbox: option.value === _this.value }
+                                        checkbox: option.value === _this4.value }
                                 },
                                 []
                             ), option.text]
@@ -1304,7 +1395,6 @@
                 var target = _ref4.target;
 
                 var value = target.value;
-
                 this.$emit('input', value);
             }
         },
@@ -1523,6 +1613,218 @@
         }
     };
 
+    var NavItem = {
+        name: 'nav-item',
+        props: {
+            disabled: {
+                type: Boolean,
+                default: false
+            },
+            isActive: {
+                type: Boolean,
+                default: false
+            },
+            tag: {
+                type: String,
+                default: 'a'
+            },
+            options: {
+                type: Array,
+                default: function _default() {
+                    return [];
+                }
+            },
+            dropdown: {
+                type: Boolean,
+                default: false
+            },
+            visible: {
+                type: Boolean,
+                default: true
+            }
+        },
+        methods: {
+            toggle: function toggle(ev) {
+                ev.preventDefault();
+
+                this.$refs.dropdown.toggle();
+            },
+            _show: function _show(ev) {
+                var _this = this;
+
+                this.visible = true;
+                this.$nextTick(function () {
+                    return _this.$emit('show', ev, _this);
+                });
+            },
+            _hide: function _hide(ev) {
+                var _this2 = this;
+
+                this.visible = false;
+                this.$nextTick(function () {
+                    return _this2.$emit('hide', ev, _this2);
+                });
+            }
+        },
+        render: function render(h) {
+            var NavItem = this.tag;
+
+            var Wrapper = 'li';
+
+            var wrapperClassName = {
+                'nav-item': true,
+                dropdown: this.dropdown
+            };
+
+            var className = {
+                'nav-link': true,
+                disabled: this.disabled,
+                active: this.isActive
+            };
+
+            var event = this.dropdown ? this.toggle : emitEvent('click', this);
+
+            return h(
+                Wrapper,
+                { 'class': wrapperClassName },
+                [h(
+                    NavItem,
+                    {
+                        attrs: {
+                            href: this.href || '#'
+                        },
+                        on: {
+                            click: event
+                        },
+
+                        'class': className },
+                    [this.$slots.default]
+                ), this.dropdown && h(
+                    DropdownMenu,
+                    {
+                        ref: 'dropdown',
+                        attrs: { options: this.options,
+
+                            active: this.visibility,
+                            variant: this.variant,
+                            size: this.size },
+                        on: {
+                            click: emitEvent('click', this)
+                        },
+
+                        'class': 'dropdown-toggle' },
+                    []
+                )]
+            );
+        }
+    };
+
+    var Navs = {
+        name: 'navs',
+        props: {
+            main: {
+                type: Boolean,
+                default: false
+            },
+            inline: {
+                type: Boolean,
+                default: false
+            },
+            tabs: {
+                type: Boolean,
+                default: false
+            },
+            pills: {
+                type: Boolean,
+                default: false
+            },
+            stacked: {
+                type: Boolean,
+                default: false
+            },
+            list: {
+                type: Array,
+                default: function _default() {
+                    return [];
+                }
+            },
+            tag: {
+                type: String,
+                default: 'ul'
+            }
+        },
+        render: function render(h) {
+            var Component = this.main ? 'nav' : this.tag;
+
+            var className = {
+                nav: true,
+                'nav-inline': this.inline && !(this.tabs && this.pills),
+                'nav-tabs': this.tabs && !(this.inline && this.pills),
+                'nav-pills': this.pills,
+                'nav-stacked': this.pills && this.stacked
+            };
+
+            return h(
+                Component,
+                { 'class': className },
+                [this.list.map(function (item) {
+                    return h(
+                        NavItem,
+                        {
+                            attrs: {
+                                disabled: item.disabled,
+                                dropdown: item.dropdown,
+                                options: item.options || [] }
+                        },
+                        [item.text]
+                    );
+                }), this.$slots.default]
+            );
+        }
+    };
+
+    var Navbar = {
+        name: 'navbar',
+        props: {
+            brand: {
+                type: Object,
+                default: function _default() {
+                    return {};
+                }
+            },
+            list: {
+                type: Array,
+                default: function _default() {
+                    return [];
+                }
+            }
+        },
+        render: function render(h) {
+            var className = {
+                navbar: true
+            };
+
+            return h(
+                'nav',
+                { 'class': className },
+                [this.brand.text && h(
+                    'a',
+                    { 'class': 'navbar-brand', on: {
+                            click: emitEvent('brand-click', this)
+                        },
+                        attrs: { href: this.brand.href || '#' }
+                    },
+                    [this.brand.text]
+                ), this.list.length && h(
+                    Navs,
+                    { 'class': 'navbar-nav', attrs: { list: this.list }
+                    },
+                    []
+                )]
+            );
+        }
+    };
+
     var ProgressBar = {
         name: 'progress-bar',
         functional: true,
@@ -1619,6 +1921,9 @@
     exports.InputGroup = InputGroup;
     exports.Jumbotron = Jumbotron;
     exports.ListGroup = ListGroup;
+    exports.Navbar = Navbar;
+    exports.NavItem = NavItem;
+    exports.Navs = Navs;
     exports.ProgressBar = ProgressBar;
     exports.Tag = Tag;
 

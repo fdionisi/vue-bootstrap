@@ -191,7 +191,7 @@
                         <form-group :type="'select'" :title="'Example select'" :options="selectOptions"></form-group>
                         <form-group :type="'select'" :multiple="true" :title="'Example multiple select'" :options="selectOptions"></form-group>
                         <form-group :type="'textarea'" :title="'Example textarea'"></form-group>
-                        <form-group :type="'radio'" title="Radio groups" :options="[{ value:'value1', text: 'Option one is this and that be sure to include why it s great' }, { value:'value2', text: 'Option two can be something else and selecting it will deselect option one' }, { value:'value3', text: 'Option three is disabled', disabled: true } ]"></form-group>
+                        <form-group v-model="vModel" :type="'radio'" title="Radio groups" :options="[{ value:'value1', text: 'Option one is this and that be sure to include why it s great' }, { value:'value2', text: 'Option two can be something else and selecting it will deselect option one' }, { value:'value3', text: 'Option three is disabled', disabled: true } ]"></form-group>
                         <form-group :type="'checkbox'" title=" " :options="[{ value:'value1', text: 'Check me out', disabled: true } ]"></form-group>
                     </div>
                     <div class="bd-example">
@@ -209,13 +209,13 @@
                     <div class="bd-example">
                         <div class="row">
                             <cols :md="6" >
-                                <alert variant="success">
+                                <alert @close="log" variant="success">
                                     <strong>Test.</strong> This is a test
                                 </alert>
                             </cols>
                         </div>
 
-                        <breadcrumb :list="[{ text: 'Hei' }, { text: 'how' }, { text: 'are' }, { text: 'you' }, { text: '?' }]"></breadcrumb>
+                        <breadcrumb @click="log" :list="[{ text: 'Hei' }, { text: 'how' }, { text: 'are' }, { text: 'you' }, { text: '?' }]"></breadcrumb>
 
                         <progress-bar variant="success" :value="20" :max="120"></progress-bar>
 
@@ -228,6 +228,9 @@
                             <h1>Ciao</h1>
                             <p><tag variant="primary">Hei</tag> Questo è un test <tag variant="warning">!!!</tag></p>
                         </list-group>
+
+                        <navs :stacked="true" :pills="true" :list="[{ text: 'test' }, { text: 'test2' }, { text: 'test3' }, btnDropdownOption]" />
+                        <navbar :brand="{ text: 'Navbar' }" :list="[{ text: 'test' }, { text: 'test2' }, { text: 'test3' }, btnDropdownOption]" />
                     </div>
                 </div>
             `,
@@ -239,7 +242,8 @@
             methods: {
                 noop: () => null,
                 log(ev) {
-                    console.log(ev)
+                    ev.preventDefault()
+                    console.log(ev, arguments)
                 }
             },
             computed: {

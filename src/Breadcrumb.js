@@ -1,26 +1,57 @@
-const crumbRenderer = (h) => (item, index, list) => {
-    const className = ['breadcrumb-item']
-    const lastPosition = list.length - 1
+import { emitEvent } from './misc/utilities'
 
-    if (index === lastPosition) className.push('active')
+const Crumb = {
+    functional: true,
+    props: {
+        disabled: {
+            type: Boolean,
+            default: false
+        },
+        isLast: {
+            type: Boolean,
+            default: false
+        },
+        text: String,
+        href: String,
+        clicked: {
+            type: Function,
+            default: () => () => {}
+        }
+    },
+    render: (h, { props }) => {
+        const className = ['breadcrumb-item']
 
-    return <li class={className}>
-        <a href={item.href || '#'}>{ item.text }</a>
-    </li>
+        if (props.isLast) className.push('active')
+
+        return(
+            <li class={className}>
+                <a on-click={props.clicked} href={props.href || '#'}>{ props.text }</a>
+            </li>
+        )
+    }
 }
 
 export default {
     name: 'breadcrumb',
-    functional: true,
     props: {
         list: {
             type: Array,
             default: () => []
         }
     },
-    render(h, { props }) {
+    render(h) {
+        const lastPosition = this.list.length - 1
+
         return <ol class="breadcrumb">
-            { props.list.map(crumbRenderer(h)) }
+            {
+                this.list.map((item, index) => <Crumb
+                    disabled={item.disabled}
+                    is-last={index === lastPosition}
+                    clicked={emitEvent('click', this, item, index)}
+                    href={item.href}
+                    text={item.text} />
+                )
+            }
         </ol>
     }
 }

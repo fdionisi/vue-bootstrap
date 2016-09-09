@@ -56,7 +56,7 @@ export default {
         }
     },
     render(h) {
-        const Tag = this.tag
+        const Component = this.tag
         const attrs = this.tag === 'button'
             ? this._buttonAttrs()
             : this.tag === 'a'
@@ -64,10 +64,10 @@ export default {
                 : this._inputAttrs()
 
         return (
-            <Tag on-click={this.clicked} class={this.className} { ...{ attrs } }>
+            <Component on-click={this.clicked} class={this.className} { ...{ attrs } }>
                 { this.$slots.default }
                 { this.text }
-            </Tag>
+            </Component>
         )
     },
     methods: {

@@ -66,7 +66,6 @@ export default {
             return <Btn
                 on-click={event}
                 class="dropdown-toggle"
-                data-toggle="dropdown"
                 aria-haspopup="true"
                 aria-expanded={this.visibility}
                 active={this.visibility}

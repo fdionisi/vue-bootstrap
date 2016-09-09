@@ -13,6 +13,9 @@ import FormGroup from './FormGroup'
 import InputGroup from './InputGroup'
 import Jumbotron from './Jumbotron'
 import ListGroup from './ListGroup'
+import Navbar from './Navbar'
+import NavItem from './NavItem'
+import Navs from './Navs'
 import ProgressBar from './ProgressBar'
 import Tag from './Tag'
 
@@ -32,6 +35,9 @@ export {
     InputGroup,
     Jumbotron,
     ListGroup,
+    Navbar,
+    NavItem,
+    Navs,
     ProgressBar,
     Tag
 }

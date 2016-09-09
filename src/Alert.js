@@ -2,19 +2,30 @@ import { STATUS_VARIANTS } from './misc/constants'
 import { emitEvent } from './misc/utilities'
 import { inEnum } from './misc/validators'
 
-const closeRenderer = (h, ctx) => {
+const CloseBtn = {
+    functional: true,
+    props: {
+        label: {
+            type: String,
+            default: 'Close'
+        },
+        clicked: {
+            type: Function,
+            default: () => () => {}
+        }
+    },
+    render: (h, { props }) => (
+        <button
+            on-click={props.clicked}
+            aria-label={props.label}
+            type="button"
+            class="close">
 
-    return <button
-        on-click={emitEvent('close', ctx)}
-        type="button"
-        class="close"
-        data-dismiss="alert"
-        aria-label="Close" >
-
-        <span aria-hidden="true">
-            &times;
-        </span>
-    </button>
+            <span aria-hidden="true">
+                &times;
+            </span>
+        </button>
+    )
 }
 
 export default {
@@ -41,7 +52,7 @@ export default {
                 role="alert"
                 class={className}>
 
-                { this.dismissible && closeRenderer(h, this) }
+                { this.dismissible && <CloseBtn clicked={emitEvent('close', this)} /> }
 
                 { this.$slots.default }
             </div>
