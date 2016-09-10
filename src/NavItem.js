@@ -57,7 +57,8 @@ export default {
         const className= {
             'nav-link': true,
             disabled: this.disabled,
-            active: this.isActive
+            active: this.isActive,
+            'dropdown-toggle': this.dropdown
         }
 
         const event = this.dropdown
@@ -76,7 +77,6 @@ export default {
                     ref="dropdown"
                     options={this.options}
                     on-click={emitEvent('click', this)}
-                    class="dropdown-toggle"
                     active={this.visibility}
                     variant={this.variant}
                     size={this.size}/>

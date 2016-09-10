@@ -52,6 +52,8 @@ export default {
         // return render
         return <div class={this.className} aria-label={this.name} role="group">
             { children }
+
+            { this.$slots.default }
         </div>
     },
     methods: {

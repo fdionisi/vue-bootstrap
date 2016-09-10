@@ -45,7 +45,8 @@ export default {
     computed: {
         className() {
             return {
-                'form-control': true,
+                'form-control': this.type !== 'static',
+                'form-control-static': this.type === 'static',
                 [`form-control-${this.status}`]: this.status,
                 [`form-control-${this.size}`]: this.size !== 'md'
             }
@@ -65,7 +66,7 @@ export default {
             }
         },
         _renderStatic() {
-            return <p on-click={this._click} class="form-control-static">{ this.placeholder }</p>
+            return <p on-click={this._click} class={this.className}>{ this.placeholder }</p>
         },
         _renderInput() {
             const h = this.$createElement
@@ -89,7 +90,7 @@ export default {
             }
 
             return <input
-                class='form-control'
+                class={this.className}
                 on-click={emitEvent('click', this)}
                 on-blur={emitEvent('blur', this)}
                 on-focus={emitEvent('focus', this)}
@@ -138,7 +139,7 @@ export default {
             return <select
                 on-click={emitEvent('click', this)}
                 on-select={onSelect}
-                class='form-control'
+                class={this.className}
                 multiple={this.multiple}>
 
                 { options.map(this._renderOption) }
@@ -164,7 +165,7 @@ export default {
                 on-focus={emitEvent('focus', this)}
                 on-keydown={emitEvent('keydown', this)}
                 on-keyup={onKeyup}
-                class="form-control">
+                class={this.className}>
 
             </textarea>
         },

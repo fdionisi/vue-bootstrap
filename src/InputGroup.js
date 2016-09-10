@@ -70,9 +70,11 @@ export default {
     render(h) {
         // return generated element
         return <div class="input-group">
+            { this.$slots.beforeAddons }
             { this.beforeAddons.map(this._renderAddon) }
             { this._renderInput() }
             { this.afterAddons.map(this._renderAddon) }
+            { this.$slots.afterAddons }
         </div>
     }
 }

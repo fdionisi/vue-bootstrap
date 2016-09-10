@@ -748,7 +748,7 @@
                 'div',
                 { 'class': this.className, attrs: { 'aria-label': this.name, role: 'group' }
                 },
-                [children]
+                [children, this.$slots.default]
             );
         },
 
@@ -1168,7 +1168,8 @@
                 var _ref;
 
                 return _ref = {
-                    'form-control': true
+                    'form-control': this.type !== 'static',
+                    'form-control-static': this.type === 'static'
                 }, defineProperty(_ref, 'form-control-' + this.status, this.status), defineProperty(_ref, 'form-control-' + this.size, this.size !== 'md'), _ref;
             }
         },
@@ -1197,7 +1198,7 @@
                         on: {
                             click: this._click
                         },
-                        'class': 'form-control-static' },
+                        'class': this.className },
                     [this.placeholder]
                 );
             },
@@ -1229,7 +1230,7 @@
                 return h(
                     'input',
                     {
-                        'class': 'form-control',
+                        'class': this.className,
                         on: {
                             click: emitEvent('click', this),
                             blur: emitEvent('blur', this),
@@ -1299,7 +1300,7 @@
                             select: onSelect
                         },
 
-                        'class': 'form-control',
+                        'class': this.className,
                         attrs: { multiple: this.multiple }
                     },
                     [options.map(this._renderOption)]
@@ -1344,7 +1345,7 @@
                             keyup: onKeyup
                         },
 
-                        'class': 'form-control' },
+                        'class': this.className },
                     []
                 );
             },
@@ -1502,7 +1503,7 @@
             return h(
                 'div',
                 { 'class': 'input-group' },
-                [this.beforeAddons.map(this._renderAddon), this._renderInput(), this.afterAddons.map(this._renderAddon)]
+                [this.$slots.beforeAddons, this.beforeAddons.map(this._renderAddon), this._renderInput(), this.afterAddons.map(this._renderAddon), this.$slots.afterAddons]
             );
         }
     };
@@ -1679,7 +1680,8 @@
             var className = {
                 'nav-link': true,
                 disabled: this.disabled,
-                active: this.isActive
+                active: this.isActive,
+                'dropdown-toggle': this.dropdown
             };
 
             var event = this.dropdown ? this.toggle : emitEvent('click', this);
@@ -1710,9 +1712,8 @@
                             size: this.size },
                         on: {
                             click: emitEvent('click', this)
-                        },
-
-                        'class': 'dropdown-toggle' },
+                        }
+                    },
                     []
                 )]
             );

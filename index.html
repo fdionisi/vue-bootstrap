@@ -192,7 +192,12 @@
                         <form-group :type="'select'" :multiple="true" :title="'Example multiple select'" :options="selectOptions"></form-group>
                         <form-group :type="'textarea'" :title="'Example textarea'"></form-group>
                         <form-group v-model="vModel" :type="'radio'" title="Radio groups" :options="[{ value:'value1', text: 'Option one is this and that be sure to include why it s great' }, { value:'value2', text: 'Option two can be something else and selecting it will deselect option one' }, { value:'value3', text: 'Option three is disabled', disabled: true } ]"></form-group>
-                        <form-group :type="'checkbox'" title=" " :options="[{ value:'value1', text: 'Check me out', disabled: true } ]"></form-group>
+
+                        <form-group :type="'checkbox'" title=" " :options="[{ value:'value1', text: 'Check me out', disabled: true } ]" />
+
+                        <form-group type="slot" title="Ciao Mattia!" note="Spacca dai...">
+                            <input-group type="text" placeholder="Recipient's username" :afterAddons="['@example.com']"></input-group>
+                        </form-group>
                     </div>
                     <div class="bd-example">
                         <form-group :row="{ xs: 10 }" type="text" value="Artisanal kale" title="email"></form-group>
