@@ -56,9 +56,11 @@
             args[_key] = arguments[_key];
         }
 
-        return function (val) {
+        var validator = function validator(val) {
             return args.includes(val);
         };
+        validator.__doc_accept = args.join(', ');
+        return validator;
     }
 
     var defineProperty = function (obj, key, value) {
@@ -1230,7 +1232,54 @@
 
     var FormControl = {
         name: 'form-control',
+        props: {
+            placeholder: String,
+            multiple: {
+                type: Boolean,
+                default: false
+            },
+            options: {
+                type: Array,
+                default: function _default() {
+                    return [];
+                }
+            },
+            status: {
+                type: String,
+                validator: inEnum(undefined, 'success', 'warning', 'danger')
+            },
+            size: {
+                type: String,
+                default: 'md'
+            },
+            value: {
+                type: null,
+                twoWay: true
+            },
+            type: {
+                type: String,
+                default: 'text'
+            }
+        },
+        computed: {
+            className: function className() {
+                var _ref;
+
+                return _ref = {
+                    'form-control': this.type !== 'static',
+                    'form-control-static': this.type === 'static'
+                }, defineProperty(_ref, 'form-control-' + this.status, this.status), defineProperty(_ref, 'form-control-' + this.size, this.size !== 'md'), _ref;
+            }
+        },
         methods: {
+            _updateAndEmit: function _updateAndEmit(eventName) {
+                var _this = this;
+
+                return function (ev) {
+                    emitEvent(eventName, _this)();
+                    _this._updateValue(ev);
+                };
+            },
             _renderStatic: function _renderStatic() {
                 var h = this.$createElement;
 
@@ -1247,42 +1296,23 @@
             _renderInput: function _renderInput() {
                 var h = this.$createElement;
 
-                return this.row ? this._renderRowInput() : this._renderNormalInput();
-            },
-            _renderRowInput: function _renderRowInput() {
-                var h = this.$createElement;
-
-                return h(
-                    'div',
-                    { 'class': colsClass(this.row) },
-                    [this._renderNormalInput()]
-                );
-            },
-            _renderNormalInput: function _renderNormalInput() {
-                var _this = this;
-
-                var h = this.$createElement;
-
-                var emitKeyup = emitEvent('keyup', this);
-                var onKeyup = function onKeyup(ev) {
-                    _this._updateValue(ev);
-                    emitKeyup(ev);
-                };
-
                 return h(
                     'input',
                     {
                         'class': this.className,
                         on: {
-                            click: emitEvent('click', this),
-                            blur: emitEvent('blur', this),
-                            focus: emitEvent('focus', this),
-                            keydown: emitEvent('keydown', this),
-                            keyup: onKeyup
+                            click: this._updateAndEmit('click'),
+                            blur: this._updateAndEmit('blur'),
+                            focus: this._updateAndEmit('focus'),
+                            keydown: this._updateAndEmit('keydown'),
+                            keypress: this._updateAndEmit('keypress'),
+                            keyup: this._updateAndEmit('keyup')
                         },
                         attrs: {
                             type: this.type,
                             id: this.id,
+                            name: this.id,
+                            value: this.value,
                             placeholder: this.placeholder }
                     },
                     []
@@ -1308,16 +1338,18 @@
                             click: emitEvent('click', this),
                             select: onSelect
                         },
+                        attrs: {
+                            id: this.id,
+                            name: this.id,
 
-                        'class': this.className,
-                        attrs: { multiple: this.multiple }
-                    },
+                            multiple: this.multiple },
+                        'class': this.className },
                     [options.map(this._renderOption)]
                 );
             },
-            _renderOption: function _renderOption(_ref) {
-                var text = _ref.text;
-                var value = _ref.value;
+            _renderOption: function _renderOption(_ref2) {
+                var text = _ref2.text;
+                var value = _ref2.value;
 
                 var h = this.$createElement;
 
@@ -1353,53 +1385,51 @@
                             keydown: emitEvent('keydown', this),
                             keyup: onKeyup
                         },
-
+                        attrs: {
+                            id: this.id,
+                            name: this.id
+                        },
                         'class': this.className },
                     []
                 );
+            },
+            _updateValue: function _updateValue(_ref3) {
+                var target = _ref3.target;
+
+                if (this.value === target.value) return;
+
+                var value = target.value;
+                this.$emit('input', value);
             }
         },
-        render: function render(h) {}
+        render: function render(h) {
+            switch (this.type) {
+                case 'slot':
+                    return this.$slots.default;
+                case 'static':
+                    return this._renderStatic();
+                case 'textarea':
+                    return this._renderTextarea();
+                case 'select':
+                    return this._renderSelect();
+                default:
+                    return this._renderInput();
+            }
+        }
     };
 
     var FormGroup = {
         name: 'form-group',
-        props: {
+        props: _extends({}, FormControl.props, {
             id: String,
             inline: {
                 type: Boolean,
                 default: false
             },
             note: String,
-            placeholder: String,
-            multiple: {
-                type: Boolean,
-                default: false
-            },
-            options: {
-                type: Array,
-                default: function _default() {
-                    return [];
-                }
-            },
-            status: {
-                type: String
-            },
             title: String,
-            row: null,
-            size: {
-                type: String,
-                default: 'md'
-            },
-            value: {
-                type: null,
-                twoWay: true
-            },
-            type: {
-                type: String,
-                default: 'text'
-            }
-        },
+            row: null
+        }),
         data: function data() {
             return {
                 hiddenValue: null
@@ -1424,19 +1454,32 @@
                     case 'radio':
                     case 'checkbox':
                         return this._renderRadioCheck();
-                    case 'static':
-                    case 'textarea':
-                    case 'select':
                     default:
                         return this._renderFormControl();
                 }
             },
-            _renderFormControl: function _renderFormControl() {
+            _renderRowElement: function _renderRowElement() {
                 var h = this.$createElement;
 
                 return h(
+                    'div',
+                    { 'class': colsClass(this.row) },
+                    [this._renderElement()]
+                );
+            },
+            _renderFormControl: function _renderFormControl() {
+                var h = this.$createElement;
+
+                var props = {};
+                for (var propName in FormControl.props) {
+                    if (FormControl.props.hasOwnProperty(propName)) props[propName] = this[propName];
+                }var on = {
+                    input: this._updateValue
+                };
+
+                return h(
                     FormControl,
-                    null,
+                    { on: on, props: props },
                     []
                 );
             },
@@ -1516,10 +1559,8 @@
 
                 return _ref2 = {}, defineProperty(_ref2, this.type, !this.inline && !this.formCheck), defineProperty(_ref2, this.type + '-inline', this.inline && !this.formCheck), defineProperty(_ref2, 'form-check', this.formCheck && !this.inline), defineProperty(_ref2, 'form-check-inline', this.formCheck && this.inline), defineProperty(_ref2, 'disabled', option.disabled), _ref2;
             },
-            _updateValue: function _updateValue(_ref3) {
-                var target = _ref3.target;
-
-                var value = target.value;
+            _updateValue: function _updateValue(value) {
+                if (this.value === value) return;
                 this.$emit('input', value);
             }
         },
@@ -1527,17 +1568,16 @@
             return h(
                 'fieldset',
                 { 'class': 'form-group' },
-                [this.title && this._renderTitle(), this._renderElement(), this.note && this._renderNote()]
+                [this.title && this._renderTitle(), this.row ? this._renderRowElement() : this._renderElement(), this.note && this._renderNote()]
             );
         }
     };
 
     var InputGroup = {
         name: 'input-group',
-        props: {
+        props: _extends({}, FormControl.props, {
             id: String,
             note: String,
-            placeholder: String,
             beforeAddons: {
                 type: Array,
                 default: function _default() {
@@ -1550,29 +1590,8 @@
                     return [];
                 }
             },
-            multiple: {
-                type: Boolean,
-                default: false
-            },
-            options: {
-                type: Array,
-                default: function _default() {
-                    return [];
-                }
-            },
-            status: {
-                type: String
-            },
-            title: String,
-            value: {
-                type: null,
-                twoWay: true
-            },
-            type: {
-                type: String,
-                default: 'text'
-            }
-        },
+            title: String
+        }),
         computed: {
             className: function className() {
                 return defineProperty({
@@ -1604,23 +1623,22 @@
             _renderInput: function _renderInput() {
                 var h = this.$createElement;
 
+                var props = {};
+                for (var propName in FormControl.props) {
+                    if (FormControl.props.hasOwnProperty(propName)) props[propName] = this[propName];
+                }var on = {
+                    input: this._updateValue
+                };
+
                 return h(
-                    'input',
-                    {
-                        'class': this.className,
-                        on: {
-                            blur: this._blur,
-                            focus: this._focus,
-                            keydown: this._keydown,
-                            keyup: this._keyup
-                        },
-                        attrs: {
-                            type: this.type,
-                            id: this.id,
-                            placeholder: this.placeholder }
-                    },
+                    FormControl,
+                    { on: on, props: props },
                     []
                 );
+            },
+            _updateValue: function _updateValue(value) {
+                if (this.value === value) return;
+                this.$emit('input', value);
             }
         },
         render: function render(h) {
