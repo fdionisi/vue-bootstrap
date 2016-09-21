@@ -1,41 +1,19 @@
 import { emitEvent, colsClass } from './misc/utilities'
 
+import FormControl from './FormControl'
+
 export default {
     name: 'form-group',
     props: {
+        ...FormControl.props,
         id: String,
         inline: {
             type: Boolean,
             default: false
         },
         note: String,
-        placeholder: String,
-        multiple: {
-            type: Boolean,
-            default: false
-        },
-        options: {
-            type: Array,
-            default: () => []
-        },
-        status: {
-            type: String
-            // validator: inEnum('success', 'warning', 'danger')
-        },
         title: String,
-        row: null,
-        size: {
-            type: String,
-            default: 'md'
-        },
-        value: {
-            type: null,
-            twoWay: true
-        },
-        type: {
-            type: String,
-            default: 'text'
-        }
+        row: null
     },
     data() {
         return {
@@ -57,48 +35,31 @@ export default {
             // define witch input
             switch (this.type) {
                 case 'slot': return this.$slots.default
-                case 'static': return this._renderStatic()
-                case 'textarea': return this._renderTextarea()
-                case 'select': return this._renderSelect()
                 case 'radio':
                 case 'checkbox': return this._renderRadioCheck()
-                default: return this._renderInput()
+                default: return this._renderFormControl()
             }
         },
-        _renderStatic() {
-            return <p on-click={this._click} class={this.className}>{ this.placeholder }</p>
-        },
-        _renderInput() {
-            const h = this.$createElement
-
-            return this.row ? this._renderRowInput() : this._renderNormalInput()
-        },
-        _renderRowInput() {
+        _renderRowElement() {
             const h = this.$createElement
 
             return <div class={colsClass(this.row)}>
-                { this._renderNormalInput() }
+                { this._renderElement() }
             </div>
         },
-        _renderNormalInput() {
+        _renderFormControl() {
             const h = this.$createElement
 
-            const emitKeyup = emitEvent('keyup', this)
-            const onKeyup = (ev) => {
-                this._updateValue(ev)
-                emitKeyup(ev)
+            const props = {}
+            for (let propName in FormControl.props)
+                if (FormControl.props.hasOwnProperty(propName))
+                    props[propName] = this[propName]
+
+            const on = {
+                input: this._updateValue
             }
 
-            return <input
-                class={this.className}
-                on-click={emitEvent('click', this)}
-                on-blur={emitEvent('blur', this)}
-                on-focus={emitEvent('focus', this)}
-                on-keydown={emitEvent('keydown', this)}
-                on-keyup={onKeyup}
-                type={this.type}
-                id={this.id}
-                placeholder={this.placeholder} />
+            return <FormControl { ...{ on, props } } />
         },
         _renderTitle() {
             const h = this.$createElement
@@ -124,50 +85,6 @@ export default {
             return <small class='text-muted'>
                 { this.note }
             </small>
-        },
-        _renderSelect() {
-            const h = this.$createElement
-
-            const options = this.options || [];
-
-            const emitSelect = emitEvent('select', this)
-            const onSelect = (ev) => {
-                this._updateValue(ev)
-                emitSelect(ev)
-            }
-
-            return <select
-                on-click={emitEvent('click', this)}
-                on-select={onSelect}
-                class={this.className}
-                multiple={this.multiple}>
-
-                { options.map(this._renderOption) }
-            </select>
-        },
-        _renderOption({text, value}) {
-            const h = this.$createElement
-
-            return <option on-click={emitEvent('option-click', this)} value={value}>{ text }</option>
-        },
-        _renderTextarea() {
-            const h = this.$createElement
-
-            const emitKeyup = emitEvent('keyup', this)
-            const onKeyup = (ev) => {
-                this._updateValue(ev)
-                emitKeyup(ev)
-            }
-
-            return <textarea
-                on-click={emitEvent('click', this)}
-                on-blur={emitEvent('blur', this)}
-                on-focus={emitEvent('focus', this)}
-                on-keydown={emitEvent('keydown', this)}
-                on-keyup={onKeyup}
-                class={this.className}>
-
-            </textarea>
         },
         _renderRadioCheck() {
             const h = this.$createElement
@@ -204,8 +121,8 @@ export default {
                 disabled: option.disabled
             }
         },
-        _updateValue({ target }) {
-            const value = target.value
+        _updateValue(value) {
+            if (this.value === value) return
             this.$emit('input', value)
         }
     },
@@ -214,7 +131,7 @@ export default {
         return <fieldset class="form-group">
             { this.title && this._renderTitle() }
 
-            { this._renderElement() }
+            { this.row ? this._renderRowElement() : this._renderElement() }
 
             { this.note && this._renderNote() }
         </fieldset>

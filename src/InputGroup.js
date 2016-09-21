@@ -1,9 +1,11 @@
+import FormControl from './FormControl'
+
 export default {
     name: 'input-group',
     props: {
+        ...FormControl.props,
         id: String,
         note: String,
-        placeholder: String,
         beforeAddons: {
             type: Array,
             default: () => []
@@ -12,27 +14,7 @@ export default {
             type: Array,
             default: () => []
         },
-        multiple: {
-            type: Boolean,
-            default: false
-        },
-        options: {
-            type: Array,
-            default: () => []
-        },
-        status: {
-            type: String
-            // validator: inEnum('success', 'warning', 'danger')
-        },
-        title: String,
-        value: {
-            type: null,
-            twoWay: true
-        },
-        type: {
-            type: String,
-            default: 'text'
-        }
+        title: String
     },
     computed: {
         className() {
@@ -55,16 +37,22 @@ export default {
         },
         _renderInput() {
             const h = this.$createElement
+
+            const props = {}
+            for (let propName in FormControl.props)
+                if (FormControl.props.hasOwnProperty(propName))
+                    props[propName] = this[propName]
+
+            const on = {
+                input: this._updateValue
+            }
+
             // return input
-            return <input
-                class={this.className}
-                on-blur={this._blur}
-                on-focus={this._focus}
-                on-keydown={this._keydown}
-                on-keyup={this._keyup}
-                type={this.type}
-                id={this.id}
-                placeholder={this.placeholder} />
+            return <FormControl { ...{ on, props } } />
+        },
+        _updateValue(value) {
+            if (this.value === value) return
+            this.$emit('input', value)
         }
     },
     render(h) {

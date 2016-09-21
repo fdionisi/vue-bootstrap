@@ -91,11 +91,11 @@ export default {
                 { text }
             </Btn>
         },
-        trigger(button) {
+        trigger(ev) {
             // if active, than remove from model
-            this.callback && this.callback(button)
+            this.callback && this.callback(ev)
             // emit toggle
-            this.$emit('press', button)
+            this.$emit('click', ev, this)
         }
     }
 }

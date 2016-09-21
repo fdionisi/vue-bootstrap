@@ -41,7 +41,8 @@ export default {
         type: {
             validator: inEnum(...BUTTON_TYPES),
             default: 'button'
-        }
+        },
+        value: null
     },
     computed: {
         className() {

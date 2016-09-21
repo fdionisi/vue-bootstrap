@@ -76,6 +76,20 @@
       return obj;
     };
 
+    var _extends = Object.assign || function (target) {
+      for (var i = 1; i < arguments.length; i++) {
+        var source = arguments[i];
+
+        for (var key in source) {
+          if (Object.prototype.hasOwnProperty.call(source, key)) {
+            target[key] = source[key];
+          }
+        }
+      }
+
+      return target;
+    };
+
     var toConsumableArray = function (arr) {
       if (Array.isArray(arr)) {
         for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
@@ -330,7 +344,8 @@
             type: {
                 validator: inEnum.apply(undefined, BUTTON_TYPES),
                 default: 'button'
-            }
+            },
+            value: null
         },
         computed: {
             className: function className() {
@@ -810,11 +825,105 @@
                     [text]
                 );
             },
-            trigger: function trigger(button) {
-                this.callback && this.callback(button);
+            trigger: function trigger(ev) {
+                this.callback && this.callback(ev);
 
-                this.$emit('press', button);
+                this.$emit('click', ev, this);
             }
+        }
+    };
+
+    var BtnCheckbox = {
+        name: 'btn-checkbox',
+        props: _extends({}, BtnGroup.props, {
+            value: null
+        }),
+        methods: {
+            _updateValue: function _updateValue(_ref) {
+                var target = _ref.target;
+
+                var currentValue = this.value || [];
+                var targetValue = target.__vue__.value;
+
+                var targetPos = currentValue.indexOf(targetValue);
+
+                if (targetPos === -1) currentValue.push(targetValue);else currentValue.splice(targetPos, 1);
+
+                this.$emit('input', currentValue);
+            }
+        },
+        computed: {
+            stateOptions: function stateOptions() {
+                var currentValue = this.value || [];
+                return this.options.map(function (option) {
+                    return _extends({}, option, {
+                        active: currentValue.includes(option.value)
+                    });
+                });
+            }
+        },
+        render: function render(h) {
+            var _this = this;
+
+            return h(
+                BtnGroup,
+                null,
+                [this.stateOptions.map(function (props) {
+                    return h(
+                        Btn,
+                        _mergeJSXProps([{
+                            on: {
+                                click: _this._updateValue
+                            }
+                        }, { props: props }]),
+                        []
+                    );
+                })]
+            );
+        }
+    };
+
+    var BtnRadio = {
+        name: 'btn-radio',
+        props: _extends({}, BtnGroup.props, {
+            value: null
+        }),
+        methods: {
+            _updateValue: function _updateValue(_ref) {
+                var target = _ref.target;
+
+                this.$emit('input', target.__vue__.value);
+            }
+        },
+        computed: {
+            stateOptions: function stateOptions() {
+                var _this = this;
+
+                return this.options.map(function (option) {
+                    return _extends({}, option, {
+                        active: _this.value === option.value
+                    });
+                });
+            }
+        },
+        render: function render(h) {
+            var _this2 = this;
+
+            return h(
+                BtnGroup,
+                null,
+                [this.stateOptions.map(function (props) {
+                    return h(
+                        Btn,
+                        _mergeJSXProps([{
+                            on: {
+                                click: _this2._updateValue
+                            }
+                        }, { props: props }]),
+                        []
+                    );
+                })]
+            );
         }
     };
 
@@ -1119,6 +1228,140 @@
         }
     };
 
+    var FormControl = {
+        name: 'form-control',
+        methods: {
+            _renderStatic: function _renderStatic() {
+                var h = this.$createElement;
+
+                return h(
+                    'p',
+                    {
+                        on: {
+                            click: this._click
+                        },
+                        'class': this.className },
+                    [this.placeholder]
+                );
+            },
+            _renderInput: function _renderInput() {
+                var h = this.$createElement;
+
+                return this.row ? this._renderRowInput() : this._renderNormalInput();
+            },
+            _renderRowInput: function _renderRowInput() {
+                var h = this.$createElement;
+
+                return h(
+                    'div',
+                    { 'class': colsClass(this.row) },
+                    [this._renderNormalInput()]
+                );
+            },
+            _renderNormalInput: function _renderNormalInput() {
+                var _this = this;
+
+                var h = this.$createElement;
+
+                var emitKeyup = emitEvent('keyup', this);
+                var onKeyup = function onKeyup(ev) {
+                    _this._updateValue(ev);
+                    emitKeyup(ev);
+                };
+
+                return h(
+                    'input',
+                    {
+                        'class': this.className,
+                        on: {
+                            click: emitEvent('click', this),
+                            blur: emitEvent('blur', this),
+                            focus: emitEvent('focus', this),
+                            keydown: emitEvent('keydown', this),
+                            keyup: onKeyup
+                        },
+                        attrs: {
+                            type: this.type,
+                            id: this.id,
+                            placeholder: this.placeholder }
+                    },
+                    []
+                );
+            },
+            _renderSelect: function _renderSelect() {
+                var _this2 = this;
+
+                var h = this.$createElement;
+
+                var options = this.options || [];
+
+                var emitSelect = emitEvent('select', this);
+                var onSelect = function onSelect(ev) {
+                    _this2._updateValue(ev);
+                    emitSelect(ev);
+                };
+
+                return h(
+                    'select',
+                    {
+                        on: {
+                            click: emitEvent('click', this),
+                            select: onSelect
+                        },
+
+                        'class': this.className,
+                        attrs: { multiple: this.multiple }
+                    },
+                    [options.map(this._renderOption)]
+                );
+            },
+            _renderOption: function _renderOption(_ref) {
+                var text = _ref.text;
+                var value = _ref.value;
+
+                var h = this.$createElement;
+
+                return h(
+                    'option',
+                    {
+                        on: {
+                            click: emitEvent('option-click', this)
+                        },
+                        attrs: { value: value }
+                    },
+                    [text]
+                );
+            },
+            _renderTextarea: function _renderTextarea() {
+                var _this3 = this;
+
+                var h = this.$createElement;
+
+                var emitKeyup = emitEvent('keyup', this);
+                var onKeyup = function onKeyup(ev) {
+                    _this3._updateValue(ev);
+                    emitKeyup(ev);
+                };
+
+                return h(
+                    'textarea',
+                    {
+                        on: {
+                            click: emitEvent('click', this),
+                            blur: emitEvent('blur', this),
+                            focus: emitEvent('focus', this),
+                            keydown: emitEvent('keydown', this),
+                            keyup: onKeyup
+                        },
+
+                        'class': this.className },
+                    []
+                );
+            }
+        },
+        render: function render(h) {}
+    };
+
     var FormGroup = {
         name: 'form-group',
         props: {
@@ -1178,71 +1421,22 @@
                 switch (this.type) {
                     case 'slot':
                         return this.$slots.default;
-                    case 'static':
-                        return this._renderStatic();
-                    case 'textarea':
-                        return this._renderTextarea();
-                    case 'select':
-                        return this._renderSelect();
                     case 'radio':
                     case 'checkbox':
                         return this._renderRadioCheck();
+                    case 'static':
+                    case 'textarea':
+                    case 'select':
                     default:
-                        return this._renderInput();
+                        return this._renderFormControl();
                 }
             },
-            _renderStatic: function _renderStatic() {
-                return h(
-                    'p',
-                    {
-                        on: {
-                            click: this._click
-                        },
-                        'class': this.className },
-                    [this.placeholder]
-                );
-            },
-            _renderInput: function _renderInput() {
-                var h = this.$createElement;
-
-                return this.row ? this._renderRowInput() : this._renderNormalInput();
-            },
-            _renderRowInput: function _renderRowInput() {
+            _renderFormControl: function _renderFormControl() {
                 var h = this.$createElement;
 
                 return h(
-                    'div',
-                    { 'class': colsClass(this.row) },
-                    [this._renderNormalInput()]
-                );
-            },
-            _renderNormalInput: function _renderNormalInput() {
-                var _this = this;
-
-                var h = this.$createElement;
-
-                var emitKeyup = emitEvent('keyup', this);
-                var onKeyup = function onKeyup(ev) {
-                    _this._updateValue(ev);
-                    emitKeyup(ev);
-                };
-
-                return h(
-                    'input',
-                    {
-                        'class': this.className,
-                        on: {
-                            click: emitEvent('click', this),
-                            blur: emitEvent('blur', this),
-                            focus: emitEvent('focus', this),
-                            keydown: emitEvent('keydown', this),
-                            keyup: onKeyup
-                        },
-                        attrs: {
-                            type: this.type,
-                            id: this.id,
-                            placeholder: this.placeholder }
-                    },
+                    FormControl,
+                    null,
                     []
                 );
             },
@@ -1279,94 +1473,24 @@
                     [this.note]
                 );
             },
-            _renderSelect: function _renderSelect() {
-                var _this2 = this;
-
-                var h = this.$createElement;
-
-                var options = this.options || [];
-
-                var emitSelect = emitEvent('select', this);
-                var onSelect = function onSelect(ev) {
-                    _this2._updateValue(ev);
-                    emitSelect(ev);
-                };
-
-                return h(
-                    'select',
-                    {
-                        on: {
-                            click: emitEvent('click', this),
-                            select: onSelect
-                        },
-
-                        'class': this.className,
-                        attrs: { multiple: this.multiple }
-                    },
-                    [options.map(this._renderOption)]
-                );
-            },
-            _renderOption: function _renderOption(_ref2) {
-                var text = _ref2.text;
-                var value = _ref2.value;
-
-                var h = this.$createElement;
-
-                return h(
-                    'option',
-                    {
-                        on: {
-                            click: emitEvent('option-click', this)
-                        },
-                        attrs: { value: value }
-                    },
-                    [text]
-                );
-            },
-            _renderTextarea: function _renderTextarea() {
-                var _this3 = this;
-
-                var h = this.$createElement;
-
-                var emitKeyup = emitEvent('keyup', this);
-                var onKeyup = function onKeyup(ev) {
-                    _this3._updateValue(ev);
-                    emitKeyup(ev);
-                };
-
-                return h(
-                    'textarea',
-                    {
-                        on: {
-                            click: emitEvent('click', this),
-                            blur: emitEvent('blur', this),
-                            focus: emitEvent('focus', this),
-                            keydown: emitEvent('keydown', this),
-                            keyup: onKeyup
-                        },
-
-                        'class': this.className },
-                    []
-                );
-            },
             _renderRadioCheck: function _renderRadioCheck() {
-                var _this4 = this;
+                var _this = this;
 
                 var h = this.$createElement;
 
                 var emitClick = emitEvent('click', this);
                 var onClick = function onClick(ev) {
-                    _this4._updateValue(ev);
+                    _this._updateValue(ev);
                     emitClick(ev);
                 };
 
                 return this.options.map(function (option) {
                     return h(
                         'div',
-                        { 'class': _this4._radioCheckClass(option) },
+                        { 'class': _this._radioCheckClass(option) },
                         [h(
                             'label',
-                            { 'class': _this4.formCheck ? 'form-check-label' : '' },
+                            { 'class': _this.formCheck ? 'form-check-label' : '' },
                             [h(
                                 'input',
                                 {
@@ -1374,12 +1498,12 @@
                                         click: onClick
                                     },
 
-                                    'class': _this4.formCheck ? 'form-check-input' : '',
-                                    attrs: { type: _this4.type,
-                                        name: _this4.id,
+                                    'class': _this.formCheck ? 'form-check-input' : '',
+                                    attrs: { type: _this.type,
+                                        name: _this.id,
                                         id: option.id,
                                         value: option.value,
-                                        checkbox: option.value === _this4.value }
+                                        checkbox: option.value === _this.value }
                                 },
                                 []
                             ), option.text]
@@ -1388,12 +1512,12 @@
                 });
             },
             _radioCheckClass: function _radioCheckClass(option) {
-                var _ref3;
+                var _ref2;
 
-                return _ref3 = {}, defineProperty(_ref3, this.type, !this.inline && !this.formCheck), defineProperty(_ref3, this.type + '-inline', this.inline && !this.formCheck), defineProperty(_ref3, 'form-check', this.formCheck && !this.inline), defineProperty(_ref3, 'form-check-inline', this.formCheck && this.inline), defineProperty(_ref3, 'disabled', option.disabled), _ref3;
+                return _ref2 = {}, defineProperty(_ref2, this.type, !this.inline && !this.formCheck), defineProperty(_ref2, this.type + '-inline', this.inline && !this.formCheck), defineProperty(_ref2, 'form-check', this.formCheck && !this.inline), defineProperty(_ref2, 'form-check-inline', this.formCheck && this.inline), defineProperty(_ref2, 'disabled', option.disabled), _ref2;
             },
-            _updateValue: function _updateValue(_ref4) {
-                var target = _ref4.target;
+            _updateValue: function _updateValue(_ref3) {
+                var target = _ref3.target;
 
                 var value = target.value;
                 this.$emit('input', value);
@@ -1842,6 +1966,60 @@
         }
     };
 
+    var Pagination = {
+        name: 'pagination',
+        props: {
+            pages: {
+                type: Number,
+                default: 0
+            },
+            value: null
+        },
+        methods: {
+            _emitClick: function _emitClick(ev) {
+                var page = ev.target.dataset.page;
+
+                ev.preventDefault();
+                this.$emit('input', parseInt(page));
+            },
+            _renderLink: function _renderLink() {
+                var h = this.$createElement;
+                var children = [];
+
+                for (var i = 1, len = this.pages; i <= len; i++) {
+                    var className = {
+                        'page-item': true,
+                        'active': this.value === i
+                    };
+
+                    children.push(h(
+                        'li',
+                        { 'class': className },
+                        [h(
+                            'a',
+                            {
+                                attrs: { href: '#', 'data-page': i },
+                                'class': 'page-link', on: {
+                                    click: this._emitClick
+                                }
+                            },
+                            [i]
+                        )]
+                    ));
+                }
+
+                return children;
+            }
+        },
+        render: function render(h) {
+            return h(
+                'ul',
+                { 'class': 'pagination' },
+                [this._renderLink()]
+            );
+        }
+    };
+
     var ProgressBar = {
         name: 'progress-bar',
         functional: true,
@@ -1927,13 +2105,16 @@
     exports.Alert = Alert;
     exports.Breadcrumb = Breadcrumb;
     exports.Btn = Btn;
+    exports.BtnCheckbox = BtnCheckbox;
     exports.BtnGroup = BtnGroup;
+    exports.BtnRadio = BtnRadio;
     exports.BtnDropdown = BtnDropdown;
     exports.BtnToolbar = BtnToolbar;
     exports.Carousel = Carousel;
     exports.Cols = Cols;
     exports.DropdownMenu = DropdownMenu;
     exports.Forms = Forms;
+    exports.FormControl = FormControl;
     exports.FormGroup = FormGroup;
     exports.InputGroup = InputGroup;
     exports.Jumbotron = Jumbotron;
@@ -1941,6 +2122,7 @@
     exports.Navbar = Navbar;
     exports.NavItem = NavItem;
     exports.Navs = Navs;
+    exports.Pagination = Pagination;
     exports.ProgressBar = ProgressBar;
     exports.Tag = Tag;
 

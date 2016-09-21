@@ -1,5 +1,5 @@
 {
-  "presets": ["es2015-rollup-vue"],
+  "presets": ["es2015-rollup-vue", "stage-2"],
   "plugins": ["transform-vue-jsx"],
   "comments": false
 }

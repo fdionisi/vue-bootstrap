@@ -121,6 +121,8 @@
                     <p>Wrap a series of buttons with <code class="highlighter-rouge">.btn</code> in <code class="highlighter-rouge">.btn-group</code>.</p>
                     <div class="bd-example" data-example-id="">
                         <btn-group :options="basicOptions" :name="'Basic example'"></btn-group>
+                        <btn-radio v-model="btnRadioVal" :options="basicOptions" :name="'Basic example'"></btn-radio>
+                        <btn-checkbox v-model="btnRadioVal" :options="basicOptions" :name="'Basic example'"></btn-checkbox>
                     </div>
                     <h2 id="button-toolbar"><a class="anchorjs-link " href="#button-toolbar" aria-label="Anchor link for: button toolbar" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal; line-height: inherit; position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Button toolbar</h2>
                     <p>Combine sets of button groups into button toolbars for more complex components.</p>
@@ -223,6 +225,7 @@
                         <breadcrumb @click="log" :list="[{ text: 'Hei' }, { text: 'how' }, { text: 'are' }, { text: 'you' }, { text: '?' }]"></breadcrumb>
 
                         <progress-bar variant="success" :value="20" :max="120"></progress-bar>
+                        <pagination v-model="pagination" :pages="10" />
 
                         <jumbotron>
                             <h1>Ciao</h1>
@@ -246,7 +249,9 @@
             `,
             data() {
                 return {
-                    vModel: null
+                    btnRadioVal: null,
+                    vModel: null,
+                    pagination: 2
                 }
             },
             methods: {
@@ -259,9 +264,9 @@
             computed: {
                 basicOptions() {
                     return [
-                        { text: 'Left' },
-                        { text: 'Middle' },
-                        { text: 'Right' }
+                        { text: 'Left', value: 'left' },
+                        { text: 'Middle', value: 'middle'},
+                        { text: 'Right', value: 'right'}
                     ]
                 },
                 basicOptionsGroups() {
