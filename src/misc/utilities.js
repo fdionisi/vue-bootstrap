@@ -23,4 +23,10 @@ export const colsClass = (ctx={}, opposite=false) => {
     }, [])
 }
 
-export const emitEvent = (eventName, ctx, ...extraArgs) => (ev) => ctx.$emit(eventName, ev, ctx, ...extraArgs)
+export const emitEvent = (eventName, ctx, ...extraArgs) => (ev) => {
+    const payload = [ctx, ...extraArgs]
+
+    if (ev) payload.unshift(ev)
+
+    ctx.$emit(eventName, ...payload)
+}

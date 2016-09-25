@@ -244,6 +244,16 @@
                                 <btn variant="success" :outline="true" type="submit">Search</button>
                             </forms>
                         </navbar>
+
+
+                        <btn @click="$refs.modal.$emit('show')">Open modal</btn>
+                        <modal ref="modal">
+                            <jumbotron>
+                                <h1>Ciao</h1>
+                                <p><tag variant="primary">Hei</tag> Questo è un <popover title="Popover test" position="right" target="test">content</popover> <tag variant="warning">!!!</tag></p>
+                                <p><tooltip target="Tooltip test">Test</tooltip></p>
+                            </jumbotron>
+                        </modal>
                     </div>
                 </div>
             `,

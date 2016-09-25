@@ -16,12 +16,15 @@ import FormGroup from './FormGroup'
 import InputGroup from './InputGroup'
 import Jumbotron from './Jumbotron'
 import ListGroup from './ListGroup'
+import Modal from './Modal'
 import Navbar from './Navbar'
 import NavItem from './NavItem'
 import Navs from './Navs'
 import Pagination from './Pagination'
+import Popover from './Popover'
 import ProgressBar from './ProgressBar'
 import Tag from './Tag'
+import Tooltip from './Tooltip'
 
 // export all components
 export {
@@ -42,10 +45,13 @@ export {
     InputGroup,
     Jumbotron,
     ListGroup,
+    Modal,
     Navbar,
     NavItem,
     Navs,
     Pagination,
+    Popover,
     ProgressBar,
-    Tag
+    Tag,
+    Tooltip
 }

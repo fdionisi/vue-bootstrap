@@ -62,7 +62,7 @@ export default {
         }
     },
     created() {
-        this.__body__ = document.body
+        this.__body__ = this.$root.$el
         this.$on('show', () => {
             // ensure listener
             if (!this.__ev_listener__) this.__ev_listener__ = this._generateListener()
@@ -124,7 +124,7 @@ export default {
     events: {
         show() {
             // ensure body
-            if (!this.__body__) this.__body__ = document.body
+            if (!this.__body__) this.__body__ = this.$root.$el
 
             // ensure listener
             if (!this.__ev_listener__) this.__ev_listener__ = this._generateListener()

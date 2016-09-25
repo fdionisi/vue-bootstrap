@@ -1,7 +1,7 @@
 const listItemRenderer = (h, ctx) => (item) => {
     const Component = ctx.action
         ? 'button'
-        : 'ul'
+        : 'li'
 
     const variant = item.variant || ctx.variant
 

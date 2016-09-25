@@ -17,52 +17,6 @@
 
     var DEVICE_SIZES = ['lg', 'md', 'sm', 'xs'];
 
-    var colsClass = function colsClass() {
-        var ctx = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-        var opposite = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-
-        return DEVICE_SIZES.reduce(function (classes, size) {
-            var popProp = function popProp(propSuffix, modifier) {
-                var propName = '' + size + propSuffix;
-                var propValue = opposite ? 12 - ctx[propName] : ctx[propName];
-
-                if (propValue) classes.push('col-' + size + modifier + '-' + propValue);
-            };
-
-            popProp('', '');
-            popProp('Offset', '-offset');
-            popProp('Push', '-push');
-            popProp('Pull', '-pull');
-
-            var hiddenPropName = size + 'Hidden';
-            if (ctx[hiddenPropName]) classes.push('hidden-' + size);
-
-            return classes;
-        }, []);
-    };
-
-    var emitEvent = function emitEvent(eventName, ctx) {
-        for (var _len = arguments.length, extraArgs = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
-            extraArgs[_key - 2] = arguments[_key];
-        }
-
-        return function (ev) {
-            return ctx.$emit.apply(ctx, [eventName, ev, ctx].concat(extraArgs));
-        };
-    };
-
-    function inEnum() {
-        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-            args[_key] = arguments[_key];
-        }
-
-        var validator = function validator(val) {
-            return args.includes(val);
-        };
-        validator.__doc_accept = args.join(', ');
-        return validator;
-    }
-
     var defineProperty = function (obj, key, value) {
       if (key in obj) {
         Object.defineProperty(obj, key, {
@@ -101,6 +55,56 @@
         return Array.from(arr);
       }
     };
+
+    var colsClass = function colsClass() {
+        var ctx = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+        var opposite = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+
+        return DEVICE_SIZES.reduce(function (classes, size) {
+            var popProp = function popProp(propSuffix, modifier) {
+                var propName = '' + size + propSuffix;
+                var propValue = opposite ? 12 - ctx[propName] : ctx[propName];
+
+                if (propValue) classes.push('col-' + size + modifier + '-' + propValue);
+            };
+
+            popProp('', '');
+            popProp('Offset', '-offset');
+            popProp('Push', '-push');
+            popProp('Pull', '-pull');
+
+            var hiddenPropName = size + 'Hidden';
+            if (ctx[hiddenPropName]) classes.push('hidden-' + size);
+
+            return classes;
+        }, []);
+    };
+
+    var emitEvent = function emitEvent(eventName, ctx) {
+        for (var _len = arguments.length, extraArgs = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
+            extraArgs[_key - 2] = arguments[_key];
+        }
+
+        return function (ev) {
+            var payload = [ctx].concat(extraArgs);
+
+            if (ev) payload.unshift(ev);
+
+            ctx.$emit.apply(ctx, [eventName].concat(toConsumableArray(payload)));
+        };
+    };
+
+    function inEnum() {
+        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+        }
+
+        var validator = function validator(val) {
+            return args.includes(val);
+        };
+        validator.__doc_accept = args.join(', ');
+        return validator;
+    }
 
     var CloseBtn = {
         functional: true,
@@ -471,7 +475,7 @@
         created: function created() {
             var _this2 = this;
 
-            this.__body__ = document.body;
+            this.__body__ = this.$root.$el;
             this.$on('show', function () {
                 if (!_this2.__ev_listener__) _this2.__ev_listener__ = _this2._generateListener();
 
@@ -544,7 +548,7 @@
 
         events: {
             show: function show() {
-                if (!this.__body__) this.__body__ = document.body;
+                if (!this.__body__) this.__body__ = this.$root.$el;
 
                 if (!this.__ev_listener__) this.__ev_listener__ = this._generateListener();
 
@@ -1686,7 +1690,7 @@
         return function (item) {
             var _className;
 
-            var Component = ctx.action ? 'button' : 'ul';
+            var Component = ctx.action ? 'button' : 'li';
 
             var variant = item.variant || ctx.variant;
 
@@ -1753,6 +1757,198 @@
                 { 'class': 'list-group' },
                 [this.list.map(listItemRenderer(h, this))]
             );
+        }
+    };
+
+    var ModalHeader = {
+        name: 'modal-header',
+        functional: true,
+        render: function render(h, _ref) {
+            var props = _ref.props;
+            var children = _ref.children;
+            var context = props.context;
+
+            var emitClose = function emitClose(ev) {
+                return context.$emit('hide', ev, context);
+            };
+
+            return h(
+                'div',
+                { 'class': 'modal-header' },
+                [context && context.dismissible && h(
+                    'button',
+                    {
+                        attrs: {
+                            type: 'button',
+
+                            'aria-label': 'Close' },
+                        'class': 'close',
+                        on: {
+                            click: emitClose
+                        }
+                    },
+                    [h(
+                        'span',
+                        {
+                            attrs: { 'aria-hidden': 'true' }
+                        },
+                        ['×']
+                    )]
+                ), props.title && h(
+                    'h4',
+                    { 'class': 'modal-title' },
+                    [props.title]
+                ), children]
+            );
+        }
+    };
+
+    var ModalBody = {
+        name: 'modal-body',
+        functional: true,
+        render: function render(h, _ref2) {
+            var children = _ref2.children;
+
+            return h(
+                'div',
+                { 'class': 'modal-body' },
+                [children]
+            );
+        }
+    };
+
+    var ModalFooter = {
+        name: 'modal-footer',
+        functional: true,
+        render: function render(h, _ref3) {
+            var children = _ref3.children;
+
+            return h(
+                'div',
+                { 'class': 'modal-footer' },
+                [children]
+            );
+        }
+    };
+
+    var Modal = {
+        name: 'modal',
+        props: {
+            container: Object,
+            dismissible: {
+                type: Boolean,
+                default: true
+            },
+            transition: {
+                type: String,
+                default: 'fade'
+            },
+            show: {
+                type: Boolean,
+                default: false
+            }
+        },
+        data: function data() {
+            return {
+                visible: false
+            };
+        },
+        created: function created() {
+            var _this = this;
+
+            this.visible = this.show;
+
+            this.$on('show', function () {
+                if (!_this.$isServer) document.body.classList.add('modal-open');
+
+                _this.visible = true;
+            });
+            this.$on('hide', function () {
+                if (!_this.$isServer) document.body.classList.remove('modal-open');
+
+                _this.visible = false;
+            });
+            this.$on('toggle', function () {
+                if (!_this.$isServer) document.body.classList.toggle('modal-open');
+
+                _this.visible = !!_this.visible;
+            });
+        },
+
+        methods: {
+            _renderBackdrop: function _renderBackdrop() {
+                var h = this.$createElement;
+
+                return h(
+                    'transition',
+                    null,
+                    [h(
+                        'div',
+                        { 'class': 'modal-backdrop fade in' },
+                        []
+                    )]
+                );
+            },
+            _renderModal: function _renderModal() {
+                var h = this.$createElement;
+
+                return h(
+                    'transition',
+                    {
+                        attrs: {
+                            name: 'fade'
+                        },
+                        on: {
+                            afterEnter: emitEvent('showed', this),
+                            afterLeave: emitEvent('hidden', this)
+                        }
+                    },
+                    [h(
+                        'div',
+                        { 'class': 'modal', on: {
+                                click: emitEvent('hide', this)
+                            },
+                            style: 'display: block' },
+                        [h(
+                            'div',
+                            {
+                                on: {
+                                    click: function click(ev) {
+                                        return ev.stopImmediatePropagation();
+                                    }
+                                },
+                                'class': 'modal-dialog', attrs: { role: 'document' }
+                            },
+                            [h(
+                                'div',
+                                { 'class': 'modal-content' },
+                                [this.$slots.header && h(
+                                    ModalHeader,
+                                    {
+                                        attrs: { context: this }
+                                    },
+                                    [this.$slots.header]
+                                ), this.$slots.body && h(
+                                    ModalBody,
+                                    null,
+                                    [this.$slots.body]
+                                ), this.$slots.footer && h(
+                                    ModalFooter,
+                                    null,
+                                    [this.$slots.footer]
+                                ), this.$slots.default]
+                            )]
+                        )]
+                    )]
+                );
+            }
+        },
+        render: function render(h) {
+            return this.visible ? h(
+                'div',
+                null,
+                [[this._renderModal(), this._renderBackdrop()]]
+            ) : null;
         }
     };
 
@@ -2038,6 +2234,144 @@
         }
     };
 
+    var Popover = {
+        name: 'popover',
+        props: {
+            event: {
+                type: String,
+                default: 'click'
+            },
+            title: String,
+            target: {
+                type: null,
+                required: true
+            },
+            show: {
+                type: Boolean,
+                default: false
+            },
+            position: {
+                type: String,
+                default: 'top'
+            }
+        },
+        data: function data() {
+            return {
+                visible: false
+            };
+        },
+
+        computed: {
+            className: function className() {
+                return defineProperty({
+                    in: true,
+                    fade: true,
+                    popover: true
+                }, 'popover-' + this.position, true);
+            }
+        },
+        created: function created() {
+            this.visible = this.show;
+        },
+        render: function render(h) {
+            var _this = this;
+
+            var on = {};
+            var style = {
+                top: 'auto',
+                left: 'auto'
+            };
+
+            var x = 0,
+                y = 0,
+                position = void 0;
+            switch (this.position) {
+                case 'top':
+                    position = 'bottom';
+                    y = -1;
+                case 'bottom':
+                    x = '-50%';
+                    y = (y || 1) * 10 + 'px';
+                    style.left = '50%';
+
+                    position = position || 'top';
+                    break;
+                case 'left':
+                    position = position || 'right';
+                    x = -1;
+                case 'right':
+                    y = '-50%';
+                    x = (x || 1) * 10 + 'px';
+                    style.top = '50%';
+
+                    position = position || 'left';
+                    break;
+            }
+
+            style[position] = '100%';
+
+            style.transform = 'translate3d(' + x + ', ' + y + ', 0)';
+
+            switch (this.event) {
+                case 'click':
+                    on.click = function (ev) {
+                        ev.preventDefault();
+                        _this.visible = !_this.visible;
+                    };
+                    break;
+                case 'hover':
+                    on.mouseenter = function () {
+                        return _this.visible = true;
+                    };
+                    on.mouseleave = function () {
+                        return _this.visible = false;
+                    };
+                    on.click = function (ev) {
+                        return ev.preventDefault();
+                    };
+                    break;
+            }
+
+            return h(
+                'span',
+                { style: 'position:relative' },
+                [h(
+                    'a',
+                    _mergeJSXProps([{
+                        attrs: { href: '#' }
+                    }, { on: on }]),
+                    [this.$slots.target || this.target]
+                ), h(
+                    'transition',
+                    {
+                        attrs: { name: 'fade' }
+                    },
+                    [this.visible && h(
+                        'div',
+                        {
+                            'class': this.className,
+                            style: style,
+                            attrs: { role: 'tooltip' }
+                        },
+                        [h(
+                            'div',
+                            { 'class': 'popover-arrow' },
+                            []
+                        ), this.title && h(
+                            'h3',
+                            { 'class': 'popover-title' },
+                            [this.title]
+                        ), h(
+                            'div',
+                            { 'class': 'popover-content' },
+                            [this.$slots.default]
+                        )]
+                    )]
+                )]
+            );
+        }
+    };
+
     var ProgressBar = {
         name: 'progress-bar',
         functional: true,
@@ -2120,6 +2454,126 @@
         }
     };
 
+    var Tooltip = {
+        name: 'tooltip',
+        props: {
+            target: {
+                type: null,
+                required: true
+            },
+            show: {
+                type: Boolean,
+                default: false
+            },
+            position: {
+                type: String,
+                default: 'top'
+            }
+        },
+        data: function data() {
+            return {
+                visible: false
+            };
+        },
+
+        computed: {
+            className: function className() {
+                return defineProperty({
+                    in: true,
+                    fade: true,
+                    tooltip: true
+                }, 'tooltip-' + this.position, true);
+            }
+        },
+        created: function created() {
+            this.visible = this.show;
+        },
+        render: function render(h) {
+            var _this = this;
+
+            var style = {
+                top: 'auto',
+                left: 'auto'
+            };
+
+            var x = 0,
+                y = 0,
+                position = void 0;
+            switch (this.position) {
+                case 'top':
+                    position = 'bottom';
+                    y = -1;
+                case 'bottom':
+                    x = '-50%';
+                    y = (y || 1) * 5 + 'px';
+                    style.left = '50%';
+
+                    position = position || 'top';
+                    break;
+                case 'left':
+                    position = position || 'right';
+                    x = -1;
+                case 'right':
+                    y = '-50%';
+                    x = (x || 1) * 5 + 'px';
+                    style.top = '50%';
+
+                    position = position || 'left';
+                    break;
+            }
+
+            style[position] = '100%';
+
+            style.transform = 'translate3d(' + x + ', ' + y + ', 0)';
+
+            var on = {
+                mouseenter: function mouseenter() {
+                    return _this.visible = true;
+                },
+                mouseleave: function mouseleave() {
+                    return _this.visible = false;
+                },
+                click: function click(ev) {
+                    return ev.preventDefault();
+                }
+            };
+
+            return h(
+                'span',
+                { style: 'position:relative' },
+                [h(
+                    'a',
+                    _mergeJSXProps([{
+                        attrs: { href: '#' }
+                    }, { on: on }]),
+                    [this.$slots.target || this.target]
+                ), h(
+                    'transition',
+                    {
+                        attrs: { name: 'fade' }
+                    },
+                    [this.visible && h(
+                        'div',
+                        {
+                            'class': this.className,
+                            style: style,
+                            attrs: { role: 'tooltip' }
+                        },
+                        [h(
+                            'div',
+                            { 'class': 'tooltip-arrow' },
+                            []
+                        ), h(
+                            'div',
+                            { 'class': 'tooltip-inner' },
+                            [this.$slots.default]
+                        )]
+                    )]
+                )]
+            );
+        }
+    };
+
     exports.Alert = Alert;
     exports.Breadcrumb = Breadcrumb;
     exports.Btn = Btn;
@@ -2137,12 +2591,15 @@
     exports.InputGroup = InputGroup;
     exports.Jumbotron = Jumbotron;
     exports.ListGroup = ListGroup;
+    exports.Modal = Modal;
     exports.Navbar = Navbar;
     exports.NavItem = NavItem;
     exports.Navs = Navs;
     exports.Pagination = Pagination;
+    exports.Popover = Popover;
     exports.ProgressBar = ProgressBar;
     exports.Tag = Tag;
+    exports.Tooltip = Tooltip;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 
