@@ -1291,7 +1291,7 @@
                     'p',
                     {
                         on: {
-                            click: this._click
+                            click: emitEvent('click', this)
                         },
                         'class': this.className },
                     [this.placeholder]
@@ -1323,24 +1323,17 @@
                 );
             },
             _renderSelect: function _renderSelect() {
-                var _this2 = this;
-
                 var h = this.$createElement;
 
                 var options = this.options || [];
-
-                var emitSelect = emitEvent('select', this);
-                var onSelect = function onSelect(ev) {
-                    _this2._updateValue(ev);
-                    emitSelect(ev);
-                };
 
                 return h(
                     'select',
                     {
                         on: {
-                            click: emitEvent('click', this),
-                            select: onSelect
+                            click: this._updateAndEmit('click'),
+                            change: this._updateAndEmit('change'),
+                            select: this._updateAndEmit('select')
                         },
                         attrs: {
                             id: this.id,
@@ -1361,7 +1354,7 @@
                     'option',
                     {
                         on: {
-                            click: emitEvent('option-click', this)
+                            click: this._updateAndEmit('click')
                         },
                         attrs: { value: value }
                     },
@@ -1369,25 +1362,18 @@
                 );
             },
             _renderTextarea: function _renderTextarea() {
-                var _this3 = this;
-
                 var h = this.$createElement;
-
-                var emitKeyup = emitEvent('keyup', this);
-                var onKeyup = function onKeyup(ev) {
-                    _this3._updateValue(ev);
-                    emitKeyup(ev);
-                };
 
                 return h(
                     'textarea',
                     {
                         on: {
-                            click: emitEvent('click', this),
-                            blur: emitEvent('blur', this),
-                            focus: emitEvent('focus', this),
-                            keydown: emitEvent('keydown', this),
-                            keyup: onKeyup
+                            click: this._updateAndEmit('click'),
+                            blur: this._updateAndEmit('blur'),
+                            focus: this._updateAndEmit('focus'),
+                            keydown: this._updateAndEmit('keydown'),
+                            keypress: this._updateAndEmit('keypress'),
+                            keyup: this._updateAndEmit('keyup')
                         },
                         attrs: {
                             id: this.id,
@@ -1478,7 +1464,15 @@
                 for (var propName in FormControl.props) {
                     if (FormControl.props.hasOwnProperty(propName)) props[propName] = this[propName];
                 }var on = {
-                    input: this._updateValue
+                    input: this._updateValue,
+                    click: emitEvent('click', this),
+                    blur: emitEvent('blur', this),
+                    focus: emitEvent('focus', this),
+                    keydown: emitEvent('keydown', this),
+                    keypress: emitEvent('keypress', this),
+                    keyup: emitEvent('keyup', this),
+                    change: emitEvent('change', this),
+                    select: emitEvent('select', this)
                 };
 
                 return h(
@@ -1527,8 +1521,10 @@
 
                 var emitClick = emitEvent('click', this);
                 var onClick = function onClick(ev) {
-                    _this._updateValue(ev);
-                    emitClick(ev);
+                    var value = ev.target.value;
+
+                    _this._updateValue(value);
+                    emitClick(value);
                 };
 
                 return this.options.map(function (option) {
@@ -1565,6 +1561,7 @@
             },
             _updateValue: function _updateValue(value) {
                 if (this.value === value) return;
+
                 this.$emit('input', value);
             }
         },
