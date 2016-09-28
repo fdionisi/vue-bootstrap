@@ -50,7 +50,7 @@ export default {
         _renderStatic() {
             const h = this.$createElement
 
-            return <p on-click={this._click} class={this.className}>{ this.placeholder }</p>
+            return <p on-click={emitEvent('click', this)} class={this.className}>{ this.placeholder }</p>
         },
         _renderInput() {
             const h = this.$createElement
@@ -74,15 +74,10 @@ export default {
 
             const options = this.options || [];
 
-            const emitSelect = emitEvent('select', this)
-            const onSelect = (ev) => {
-                this._updateValue(ev)
-                emitSelect(ev)
-            }
-
             return <select
-                on-click={emitEvent('click', this)}
-                on-select={onSelect}
+                on-click={this._updateAndEmit('click')}
+                on-change={this._updateAndEmit('change')}
+                on-select={this._updateAndEmit('select')}
                 id={this.id}
                 name={this.id}
                 class={this.className}
@@ -94,23 +89,18 @@ export default {
         _renderOption({text, value}) {
             const h = this.$createElement
 
-            return <option on-click={emitEvent('option-click', this)} value={value}>{ text }</option>
+            return <option on-click={this._updateAndEmit('click')} value={value}>{ text }</option>
         },
         _renderTextarea() {
             const h = this.$createElement
 
-            const emitKeyup = emitEvent('keyup', this)
-            const onKeyup = (ev) => {
-                this._updateValue(ev)
-                emitKeyup(ev)
-            }
-
             return <textarea
-                on-click={emitEvent('click', this)}
-                on-blur={emitEvent('blur', this)}
-                on-focus={emitEvent('focus', this)}
-                on-keydown={emitEvent('keydown', this)}
-                on-keyup={onKeyup}
+                on-click={this._updateAndEmit('click')}
+                on-blur={this._updateAndEmit('blur')}
+                on-focus={this._updateAndEmit('focus')}
+                on-keydown={this._updateAndEmit('keydown')}
+                on-keypress={this._updateAndEmit('keypress')}
+                on-keyup={this._updateAndEmit('keyup')}
                 id={this.id}
                 name={this.id}
                 class={this.className}>

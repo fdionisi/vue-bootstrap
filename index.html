@@ -190,8 +190,8 @@
                     <div class="bd-example">
                         <form-group v-model="vModel" :type="'email'" :title="'Email address'" :placeholder="'Enter email'" :note="'We will never share your email with anyone else.'"></form-group>
                         <form-group :type="'password'" :title="'Password'" :placeholder="'Password'"></form-group>
-                        <form-group :type="'select'" :title="'Example select'" :options="selectOptions"></form-group>
-                        <form-group :type="'select'" :multiple="true" :title="'Example multiple select'" :options="selectOptions"></form-group>
+                        <form-group v-model="selTest" type="select" :title="'Example select'" :options="selectOptions"></form-group>
+                        <form-group type="select" :multiple="true" :title="'Example multiple select'" :options="selectOptions"></form-group>
                         <form-group :type="'textarea'" :title="'Example textarea'"></form-group>
                         <form-group v-model="vModel" :type="'radio'" title="Radio groups" :options="[{ value:'value1', text: 'Option one is this and that be sure to include why it s great' }, { value:'value2', text: 'Option two can be something else and selecting it will deselect option one' }, { value:'value3', text: 'Option three is disabled', disabled: true } ]"></form-group>
 
@@ -259,6 +259,7 @@
             `,
             data() {
                 return {
+                    selTest: null,
                     btnRadioVal: null,
                     vModel: null,
                     pagination: 2
