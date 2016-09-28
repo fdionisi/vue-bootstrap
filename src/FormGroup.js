@@ -56,7 +56,15 @@ export default {
                     props[propName] = this[propName]
 
             const on = {
-                input: this._updateValue
+                input: this._updateValue,
+                click: emitEvent('click', this),
+                blur: emitEvent('blur', this),
+                focus: emitEvent('focus', this),
+                keydown: emitEvent('keydown', this),
+                keypress: emitEvent('keypress', this),
+                keyup: emitEvent('keyup', this),
+                change: emitEvent('change', this),
+                select: emitEvent('select', this)
             }
 
             return <FormControl { ...{ on, props } } />
@@ -91,8 +99,9 @@ export default {
 
             const emitClick = emitEvent('click', this)
             const onClick = (ev) => {
-                this._updateValue(ev)
-                emitClick(ev)
+                const { value } = ev.target
+                this._updateValue(value)
+                emitClick(value)
             }
 
             return this.options.map((option) => (
@@ -123,6 +132,7 @@ export default {
         },
         _updateValue(value) {
             if (this.value === value) return
+
             this.$emit('input', value)
         }
     },
