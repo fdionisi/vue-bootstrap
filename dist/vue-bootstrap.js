@@ -915,9 +915,16 @@
         render: function render(h) {
             var _this2 = this;
 
+            var btnGroupProps = this.$options.props || {};
+            var props = {};
+
+            for (var propName in btnGroupProps) {
+                if (btnGroupProps.hasOwnProperty(propName)) props[propName] = this[propName];
+            }delete props.value;
+
             return h(
                 BtnGroup,
-                null,
+                { props: props },
                 [this.stateOptions.map(function (props) {
                     return h(
                         Btn,
