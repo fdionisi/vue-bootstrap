@@ -915,11 +915,10 @@
         render: function render(h) {
             var _this2 = this;
 
-            var btnGroupProps = this.$options.props || {};
             var props = {};
 
-            for (var propName in btnGroupProps) {
-                if (btnGroupProps.hasOwnProperty(propName)) props[propName] = this[propName];
+            for (var propName in Btn.props) {
+                if (Btn.props.hasOwnProperty(propName)) props[propName] = this[propName];
             }delete props.value;
 
             return h(

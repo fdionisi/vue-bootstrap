@@ -23,11 +23,10 @@ export default {
         }
     },
     render(h) {
-        const btnGroupProps = this.$options.props || {}
         const props = {}
 
-        for (let propName in btnGroupProps)
-            if (btnGroupProps.hasOwnProperty(propName))
+        for (let propName in Btn.props)
+            if (Btn.props.hasOwnProperty(propName))
                 props[propName] = this[propName]
 
         delete props.value
