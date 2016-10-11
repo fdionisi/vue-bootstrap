@@ -29,7 +29,7 @@ var builds = [
     env: 'development',
     out: 'dist/vue-bootstrap.js',
     banner: true,
-    external: () => false,
+    external: (value) => value === 'vue',
     alias: {
       entities: './entity-decoder'
     }
@@ -40,7 +40,7 @@ var builds = [
     format: 'umd',
     env: 'production',
     out: 'dist/vue-bootstrap.min.js',
-    external: () => false,
+    external: (value) => value === 'vue',
     banner: true,
     alias: {
       entities: './entity-decoder'

@@ -189,6 +189,16 @@
                     <p>Remember, since Bootstrap utilizes the HTML5 doctype, <strong>all inputs must have a <code class="highlighter-rouge">type</code> attribute</strong>.</p>
                     <div class="bd-example">
                         <form-group v-model="vModel" :type="'email'" :title="'Email address'" :placeholder="'Enter email'" :note="'We will never share your email with anyone else.'"></form-group>
+                        <form-group
+                            v-model="vModel"
+                            type="text"
+                            title="Email address"
+                            placeholder="Enter email"
+                            status="success"
+                            status-message="Good job!"
+                            note="We will never share your email with anyone else.">
+                        </form-group>
+
                         <form-group :type="'password'" :title="'Password'" :placeholder="'Password'"></form-group>
                         <form-group v-model="selTest" type="select" :title="'Example select'" :options="selectOptions"></form-group>
                         <form-group type="select" :multiple="true" :title="'Example multiple select'" :options="selectOptions"></form-group>
@@ -247,11 +257,9 @@
 
 
                         <btn @click="$refs.modal.$emit('show')">Open modal</btn>
-                        <modal ref="modal">
+                        <modal ref="modal" id="test">
                             <jumbotron>
                                 <h1>Ciao</h1>
-                                <p><tag variant="primary">Hei</tag> Questo è un <popover title="Popover test" position="right" target="test">content</popover> <tag variant="warning">!!!</tag></p>
-                                <p><tooltip target="Tooltip test">Test</tooltip></p>
                             </jumbotron>
                         </modal>
                     </div>

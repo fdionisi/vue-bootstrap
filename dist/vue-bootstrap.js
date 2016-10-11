@@ -4,10 +4,12 @@
  * Released under the MIT License.
  */
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-	typeof define === 'function' && define.amd ? define(['exports'], factory) :
-	(factory((global.VueBootstrap = global.VueBootstrap || {})));
-}(this, (function (exports) { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('vue')) :
+	typeof define === 'function' && define.amd ? define(['exports', 'vue'], factory) :
+	(factory((global.VueBootstrap = global.VueBootstrap || {}),global.Vue));
+}(this, (function (exports,Vue) { 'use strict';
+
+    Vue = 'default' in Vue ? Vue['default'] : Vue;
 
     var SIZES = ['sm', 'md', 'lg'];
 
@@ -16,6 +18,494 @@
     var BUTTON_VARIANTS = VARIANTS.concat('link');
 
     var DEVICE_SIZES = ['lg', 'md', 'sm', 'xs'];
+
+    var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}
+
+    function interopDefault(ex) {
+    	return ex && typeof ex === 'object' && 'default' in ex ? ex['default'] : ex;
+    }
+
+    function createCommonjsModule(fn, module) {
+    	return module = { exports: {} }, fn(module, module.exports), module.exports;
+    }
+
+    var inDOM = createCommonjsModule(function (module) {
+    'use strict';
+
+    module.exports = !!(typeof window !== 'undefined' && window.document && window.document.createElement);
+    });
+
+    var inDOM$1 = interopDefault(inDOM);
+
+
+    var require$$0 = Object.freeze({
+    	default: inDOM$1
+    });
+
+    var contains = createCommonjsModule(function (module) {
+    'use strict';
+
+    var canUseDOM = interopDefault(require$$0);
+
+    var contains = function () {
+      var root = canUseDOM && document.documentElement;
+
+      return root && root.contains ? function (context, node) {
+        return context.contains(node);
+      } : root && root.compareDocumentPosition ? function (context, node) {
+        return context === node || !!(context.compareDocumentPosition(node) & 16);
+      } : function (context, node) {
+        if (node) do {
+          if (node === context) return true;
+        } while (node = node.parentNode);
+
+        return false;
+      };
+    }();
+
+    module.exports = contains;
+    });
+
+    var contains$1 = interopDefault(contains);
+
+
+    var require$$2 = Object.freeze({
+      default: contains$1
+    });
+
+    var isWindow = createCommonjsModule(function (module) {
+    'use strict';
+
+    module.exports = function getWindow(node) {
+      return node === node.window ? node : node.nodeType === 9 ? node.defaultView || node.parentWindow : false;
+    };
+    });
+
+    var isWindow$1 = interopDefault(isWindow);
+
+
+    var require$$0$1 = Object.freeze({
+      default: isWindow$1
+    });
+
+    var ownerDocument = createCommonjsModule(function (module, exports) {
+    "use strict";
+
+    exports.__esModule = true;
+    exports["default"] = ownerDocument;
+
+    function ownerDocument(node) {
+      return node && node.ownerDocument || document;
+    }
+
+    module.exports = exports["default"];
+    });
+
+    var ownerDocument$1 = interopDefault(ownerDocument);
+
+
+    var require$$1 = Object.freeze({
+      default: ownerDocument$1
+    });
+
+    var offset = createCommonjsModule(function (module) {
+    'use strict';
+
+    var contains = interopDefault(require$$2),
+        getWindow = interopDefault(require$$0$1),
+        ownerDocument = interopDefault(require$$1);
+
+    module.exports = function offset(node) {
+      var doc = ownerDocument(node),
+          win = getWindow(doc),
+          docElem = doc && doc.documentElement,
+          box = { top: 0, left: 0, height: 0, width: 0 };
+
+      if (!doc) return;
+
+      if (!contains(docElem, node)) return box;
+
+      if (node.getBoundingClientRect !== undefined) box = node.getBoundingClientRect();
+
+      if (box.width || box.height) {
+
+        box = {
+          top: box.top + (win.pageYOffset || docElem.scrollTop) - (docElem.clientTop || 0),
+          left: box.left + (win.pageXOffset || docElem.scrollLeft) - (docElem.clientLeft || 0),
+          width: (box.width == null ? node.offsetWidth : box.width) || 0,
+          height: (box.height == null ? node.offsetHeight : box.height) || 0
+        };
+      }
+
+      return box;
+    };
+    });
+
+    var getOffset = interopDefault(offset);
+
+
+    var require$$4 = Object.freeze({
+      default: getOffset
+    });
+
+    var babelHelpers = createCommonjsModule(function (module, exports) {
+    (function (root, factory) {
+      if (typeof define === "function" && define.amd) {
+        define(["exports"], factory);
+      } else if (typeof exports === "object") {
+        factory(exports);
+      } else {
+        factory(root.babelHelpers = {});
+      }
+    })(commonjsGlobal, function (global) {
+      var babelHelpers = global;
+
+      babelHelpers.interopRequireDefault = function (obj) {
+        return obj && obj.__esModule ? obj : {
+          "default": obj
+        };
+      };
+
+      babelHelpers._extends = Object.assign || function (target) {
+        for (var i = 1; i < arguments.length; i++) {
+          var source = arguments[i];
+
+          for (var key in source) {
+            if (Object.prototype.hasOwnProperty.call(source, key)) {
+              target[key] = source[key];
+            }
+          }
+        }
+
+        return target;
+      };
+    });
+    });
+
+    var babelHelpers$1 = interopDefault(babelHelpers);
+
+
+    var require$$1$1 = Object.freeze({
+      default: babelHelpers$1
+    });
+
+    var camelize = createCommonjsModule(function (module) {
+    "use strict";
+
+    var rHyphen = /-(.)/g;
+
+    module.exports = function camelize(string) {
+      return string.replace(rHyphen, function (_, chr) {
+        return chr.toUpperCase();
+      });
+    };
+    });
+
+    var camelize$1 = interopDefault(camelize);
+
+
+    var require$$0$4 = Object.freeze({
+      default: camelize$1
+    });
+
+    var camelizeStyle = createCommonjsModule(function (module) {
+    'use strict';
+
+    var camelize = interopDefault(require$$0$4);
+    var msPattern = /^-ms-/;
+
+    module.exports = function camelizeStyleName(string) {
+      return camelize(string.replace(msPattern, 'ms-'));
+    };
+    });
+
+    var camelizeStyle$1 = interopDefault(camelizeStyle);
+
+
+    var require$$0$3 = Object.freeze({
+      default: camelizeStyle$1
+    });
+
+    var hyphenate = createCommonjsModule(function (module) {
+    'use strict';
+
+    var rUpper = /([A-Z])/g;
+
+    module.exports = function hyphenate(string) {
+      return string.replace(rUpper, '-$1').toLowerCase();
+    };
+    });
+
+    var hyphenate$1 = interopDefault(hyphenate);
+
+
+    var require$$0$5 = Object.freeze({
+      default: hyphenate$1
+    });
+
+    var hyphenateStyle = createCommonjsModule(function (module) {
+    "use strict";
+
+    var hyphenate = interopDefault(require$$0$5);
+    var msPattern = /^ms-/;
+
+    module.exports = function hyphenateStyleName(string) {
+      return hyphenate(string).replace(msPattern, "-ms-");
+    };
+    });
+
+    var hyphenateStyle$1 = interopDefault(hyphenateStyle);
+
+
+    var require$$2$1 = Object.freeze({
+      default: hyphenateStyle$1
+    });
+
+    var getComputedStyle = createCommonjsModule(function (module) {
+    'use strict';
+
+    var babelHelpers = interopDefault(require$$1$1);
+
+    var _utilCamelizeStyle = interopDefault(require$$0$3);
+
+    var _utilCamelizeStyle2 = babelHelpers.interopRequireDefault(_utilCamelizeStyle);
+
+    var rposition = /^(top|right|bottom|left)$/;
+    var rnumnonpx = /^([+-]?(?:\d*\.|)\d+(?:[eE][+-]?\d+|))(?!px)[a-z%]+$/i;
+
+    module.exports = function _getComputedStyle(node) {
+      if (!node) throw new TypeError('No Element passed to `getComputedStyle()`');
+      var doc = node.ownerDocument;
+
+      return 'defaultView' in doc ? doc.defaultView.opener ? node.ownerDocument.defaultView.getComputedStyle(node, null) : window.getComputedStyle(node, null) : {
+        getPropertyValue: function getPropertyValue(prop) {
+          var style = node.style;
+
+          prop = (0, _utilCamelizeStyle2['default'])(prop);
+
+          if (prop == 'float') prop = 'styleFloat';
+
+          var current = node.currentStyle[prop] || null;
+
+          if (current == null && style && style[prop]) current = style[prop];
+
+          if (rnumnonpx.test(current) && !rposition.test(prop)) {
+            var left = style.left;
+            var runStyle = node.runtimeStyle;
+            var rsLeft = runStyle && runStyle.left;
+
+            if (rsLeft) runStyle.left = node.currentStyle.left;
+
+            style.left = prop === 'fontSize' ? '1em' : current;
+            current = style.pixelLeft + 'px';
+
+            style.left = left;
+            if (rsLeft) runStyle.left = rsLeft;
+          }
+
+          return current;
+        }
+      };
+    };
+    });
+
+    var getComputedStyle$1 = interopDefault(getComputedStyle);
+
+
+    var require$$1$2 = Object.freeze({
+      default: getComputedStyle$1
+    });
+
+    var removeStyle = createCommonjsModule(function (module) {
+    'use strict';
+
+    module.exports = function removeStyle(node, key) {
+      return 'removeProperty' in node.style ? node.style.removeProperty(key) : node.style.removeAttribute(key);
+    };
+    });
+
+    var removeStyle$1 = interopDefault(removeStyle);
+
+
+    var require$$0$6 = Object.freeze({
+      default: removeStyle$1
+    });
+
+    var index = createCommonjsModule(function (module) {
+    'use strict';
+
+    var camelize = interopDefault(require$$0$3),
+        hyphenate = interopDefault(require$$2$1),
+        _getComputedStyle = interopDefault(require$$1$2),
+        removeStyle = interopDefault(require$$0$6);
+
+    var has = Object.prototype.hasOwnProperty;
+
+    module.exports = function style(node, property, value) {
+      var css = '',
+          props = property;
+
+      if (typeof property === 'string') {
+
+        if (value === undefined) return node.style[camelize(property)] || _getComputedStyle(node).getPropertyValue(hyphenate(property));else (props = {})[property] = value;
+      }
+
+      for (var key in props) {
+        if (has.call(props, key)) {
+          !props[key] && props[key] !== 0 ? removeStyle(node, hyphenate(key)) : css += hyphenate(key) + ':' + props[key] + ';';
+        }
+      }node.style.cssText += ';' + css;
+    };
+    });
+
+    var index$1 = interopDefault(index);
+
+
+    var require$$0$2 = Object.freeze({
+      default: index$1
+    });
+
+    var offsetParent = createCommonjsModule(function (module, exports) {
+    'use strict';
+
+    var babelHelpers = interopDefault(require$$1$1);
+
+    exports.__esModule = true;
+    exports['default'] = offsetParent;
+
+    var _ownerDocument = interopDefault(require$$1);
+
+    var _ownerDocument2 = babelHelpers.interopRequireDefault(_ownerDocument);
+
+    var _style = interopDefault(require$$0$2);
+
+    var _style2 = babelHelpers.interopRequireDefault(_style);
+
+    function nodeName(node) {
+      return node.nodeName && node.nodeName.toLowerCase();
+    }
+
+    function offsetParent(node) {
+      var doc = (0, _ownerDocument2['default'])(node),
+          offsetParent = node && node.offsetParent;
+
+      while (offsetParent && nodeName(node) !== 'html' && (0, _style2['default'])(offsetParent, 'position') === 'static') {
+        offsetParent = offsetParent.offsetParent;
+      }
+
+      return offsetParent || doc.documentElement;
+    }
+
+    module.exports = exports['default'];
+    });
+
+    var offsetParent$1 = interopDefault(offsetParent);
+
+
+    var require$$3 = Object.freeze({
+      default: offsetParent$1
+    });
+
+    var scrollTop = createCommonjsModule(function (module) {
+    'use strict';
+
+    var getWindow = interopDefault(require$$0$1);
+
+    module.exports = function scrollTop(node, val) {
+      var win = getWindow(node);
+
+      if (val === undefined) return win ? 'pageYOffset' in win ? win.pageYOffset : win.document.documentElement.scrollTop : node.scrollTop;
+
+      if (win) win.scrollTo('pageXOffset' in win ? win.pageXOffset : win.document.documentElement.scrollLeft, val);else node.scrollTop = val;
+    };
+    });
+
+    var getScrollTop = interopDefault(scrollTop);
+
+
+    var require$$2$2 = Object.freeze({
+      default: getScrollTop
+    });
+
+    var scrollLeft = createCommonjsModule(function (module) {
+    'use strict';
+
+    var getWindow = interopDefault(require$$0$1);
+
+    module.exports = function scrollTop(node, val) {
+      var win = getWindow(node);
+
+      if (val === undefined) return win ? 'pageXOffset' in win ? win.pageXOffset : win.document.documentElement.scrollLeft : node.scrollLeft;
+
+      if (win) win.scrollTo(val, 'pageYOffset' in win ? win.pageYOffset : win.document.documentElement.scrollTop);else node.scrollLeft = val;
+    };
+    });
+
+    var scrollLeft$1 = interopDefault(scrollLeft);
+
+
+    var require$$1$3 = Object.freeze({
+      default: scrollLeft$1
+    });
+
+    var position = createCommonjsModule(function (module, exports) {
+    'use strict';
+
+    var babelHelpers = interopDefault(require$$1$1);
+
+    exports.__esModule = true;
+    exports['default'] = position;
+
+    var _offset = interopDefault(require$$4);
+
+    var _offset2 = babelHelpers.interopRequireDefault(_offset);
+
+    var _offsetParent = interopDefault(require$$3);
+
+    var _offsetParent2 = babelHelpers.interopRequireDefault(_offsetParent);
+
+    var _scrollTop = interopDefault(require$$2$2);
+
+    var _scrollTop2 = babelHelpers.interopRequireDefault(_scrollTop);
+
+    var _scrollLeft = interopDefault(require$$1$3);
+
+    var _scrollLeft2 = babelHelpers.interopRequireDefault(_scrollLeft);
+
+    var _style = interopDefault(require$$0$2);
+
+    var _style2 = babelHelpers.interopRequireDefault(_style);
+
+    function nodeName(node) {
+      return node.nodeName && node.nodeName.toLowerCase();
+    }
+
+    function position(node, offsetParent) {
+      var parentOffset = { top: 0, left: 0 },
+          offset;
+
+      if ((0, _style2['default'])(node, 'position') === 'fixed') {
+        offset = node.getBoundingClientRect();
+      } else {
+        offsetParent = offsetParent || (0, _offsetParent2['default'])(node);
+        offset = (0, _offset2['default'])(node);
+
+        if (nodeName(offsetParent) !== 'html') parentOffset = (0, _offset2['default'])(offsetParent);
+
+        parentOffset.top += parseInt((0, _style2['default'])(offsetParent, 'borderTopWidth'), 10) - (0, _scrollTop2['default'])(offsetParent) || 0;
+        parentOffset.left += parseInt((0, _style2['default'])(offsetParent, 'borderLeftWidth'), 10) - (0, _scrollLeft2['default'])(offsetParent) || 0;
+      }
+
+      return babelHelpers._extends({}, offset, {
+        top: offset.top - parentOffset.top - (parseInt((0, _style2['default'])(node, 'marginTop'), 10) || 0),
+        left: offset.left - parentOffset.left - (parseInt((0, _style2['default'])(node, 'marginLeft'), 10) || 0)
+      });
+    }
+
+    module.exports = exports['default'];
+    });
+
+    interopDefault(position);
 
     var defineProperty = function (obj, key, value) {
       if (key in obj) {
@@ -261,15 +751,7 @@
         }
     };
 
-    function interopDefault(ex) {
-    	return ex && typeof ex === 'object' && 'default' in ex ? ex['default'] : ex;
-    }
-
-    function createCommonjsModule(fn, module) {
-    	return module = { exports: {} }, fn(module, module.exports), module.exports;
-    }
-
-    var index = createCommonjsModule(function (module) {
+    var index$2 = createCommonjsModule(function (module) {
     var nestRE = /^(attrs|props|on|nativeOn|class|style|hook)$/;
 
     module.exports = function mergeJSXProps(objs) {
@@ -308,7 +790,7 @@
     }
     });
 
-    var _mergeJSXProps = interopDefault(index);
+    var _mergeJSXProps = interopDefault(index$2);
 
     var BUTTON_TAG = ['button', 'a', 'input'];
     var BUTTON_TYPES = ['button', 'reset', 'submit'];
@@ -1422,6 +1904,7 @@
                 type: Boolean,
                 default: false
             },
+            statusMessage: String,
             note: String,
             title: String,
             row: null
@@ -1434,12 +1917,9 @@
 
         computed: {
             className: function className() {
-                var _ref;
-
-                return _ref = {
-                    'form-control': this.type !== 'static',
-                    'form-control-static': this.type === 'static'
-                }, defineProperty(_ref, 'form-control-' + this.status, this.status), defineProperty(_ref, 'form-control-' + this.size, this.size !== 'md'), _ref;
+                return defineProperty({
+                    'form-group': this.type !== 'static'
+                }, 'has-' + this.status, this.status);
             }
         },
         methods: {
@@ -1574,8 +2054,12 @@
         render: function render(h) {
             return h(
                 'fieldset',
-                { 'class': 'form-group' },
-                [this.title && this._renderTitle(), this.row ? this._renderRowElement() : this._renderElement(), this.note && this._renderNote()]
+                { 'class': this.className },
+                [this.title && this._renderTitle(), this.row ? this._renderRowElement() : this._renderElement(), this.status && this.statusMessage && h(
+                    'div',
+                    { 'class': 'form-control-feedback' },
+                    [this.statusMessage]
+                ), this.note && this._renderNote()]
             );
         }
     };
@@ -1837,6 +2321,10 @@
     var Modal = {
         name: 'modal',
         props: {
+            id: {
+                type: String,
+                required: true
+            },
             container: Object,
             dismissible: {
                 type: Boolean,
@@ -1853,7 +2341,8 @@
         },
         data: function data() {
             return {
-                visible: false
+                visible: false,
+                modalVisible: false
             };
         },
         created: function created() {
@@ -1879,6 +2368,42 @@
         },
 
         methods: {
+            _ejectModal: function _ejectModal() {
+                var _this2 = this;
+
+                if (this.$isServer || !this._modal) return;
+
+                this.modalVisible = false;
+
+                this.$nextTick(function () {
+                    _this2._modal.$destroy();
+                    document.body.removeChild(document.querySelector('#' + _this2.id));
+
+                    delete _this2._modal;
+                });
+            },
+            _injectModal: function _injectModal() {
+                var _this3 = this;
+
+                if (this.$isServer || this._modal) return;
+
+                var ctx = this;
+
+                var injectDiv = function injectDiv() {
+                    return document.body.appendChild(document.createElement('div'));
+                };
+
+                this._modal = new Vue({
+                    el: injectDiv(),
+                    render: function render(h) {
+                        return ctx._renderEl();
+                    }
+                });
+
+                this.$nextTick(function () {
+                    _this3.modalVisible = true;
+                });
+            },
             _renderBackdrop: function _renderBackdrop() {
                 var h = this.$createElement;
 
@@ -1898,15 +2423,9 @@
                 return h(
                     'transition',
                     {
-                        attrs: {
-                            name: 'fade'
-                        },
-                        on: {
-                            afterEnter: emitEvent('showed', this),
-                            afterLeave: emitEvent('hidden', this)
-                        }
+                        attrs: { name: 'fade' }
                     },
-                    [h(
+                    ['this.modalVisible && ', h(
                         'div',
                         { 'class': 'modal', on: {
                                 click: emitEvent('hide', this)
@@ -1944,14 +2463,26 @@
                         )]
                     )]
                 );
+            },
+            _renderEl: function _renderEl() {
+                var h = this.$createElement;
+
+                return h(
+                    'div',
+                    {
+                        attrs: { id: this.id }
+                    },
+                    [[this._renderModal(), this._renderBackdrop()]]
+                );
+            }
+        },
+        watch: {
+            visible: function visible(val) {
+                if (val) this._injectModal();else this._ejectModal();
             }
         },
         render: function render(h) {
-            return this.visible ? h(
-                'div',
-                null,
-                [[this._renderModal(), this._renderBackdrop()]]
-            ) : null;
+            return null;
         }
     };
 
@@ -2240,6 +2771,10 @@
     var Popover = {
         name: 'popover',
         props: {
+            id: {
+                type: String,
+                required: true
+            },
             event: {
                 type: String,
                 default: 'click'
@@ -2276,75 +2811,46 @@
         created: function created() {
             this.visible = this.show;
         },
-        render: function render(h) {
-            var _this = this;
 
-            var on = {};
-            var style = {
-                top: 'auto',
-                left: 'auto'
-            };
+        methods: {
+            _ejectPopover: function _ejectPopover() {
+                if (this.$isServer || !this._modal) return;
 
-            var x = 0,
-                y = 0,
-                position = void 0;
-            switch (this.position) {
-                case 'top':
-                    position = 'bottom';
-                    y = -1;
-                case 'bottom':
-                    x = '-50%';
-                    y = (y || 1) * 10 + 'px';
-                    style.left = '50%';
+                var ctx = this;
+                var Vue = this.constructor;
 
-                    position = position || 'top';
-                    break;
-                case 'left':
-                    position = position || 'right';
-                    x = -1;
-                case 'right':
-                    y = '-50%';
-                    x = (x || 1) * 10 + 'px';
-                    style.top = '50%';
+                this._modal.$destroy();
+                document.body.removeChild(document.querySelector('#modal'));
 
-                    position = position || 'left';
-                    break;
-            }
+                delete this._modal;
+            },
+            _injectPopover: function _injectPopover() {
+                if (this.$isServer || this._modal) return;
 
-            style[position] = '100%';
+                var ctx = this;
+                var Vue = this.constructor;
 
-            style.transform = 'translate3d(' + x + ', ' + y + ', 0)';
+                var _modal_el = document.createElement('div');
+                _modal_el.id = 'modal';
 
-            switch (this.event) {
-                case 'click':
-                    on.click = function (ev) {
-                        ev.preventDefault();
-                        _this.visible = !_this.visible;
-                    };
-                    break;
-                case 'hover':
-                    on.mouseenter = function () {
-                        return _this.visible = true;
-                    };
-                    on.mouseleave = function () {
-                        return _this.visible = false;
-                    };
-                    on.click = function (ev) {
-                        return ev.preventDefault();
-                    };
-                    break;
-            }
+                document.body.appendChild(_modal_el);
 
-            return h(
-                'span',
-                { style: 'position:relative' },
-                [h(
-                    'a',
-                    _mergeJSXProps([{
-                        attrs: { href: '#' }
-                    }, { on: on }]),
-                    [this.$slots.target || this.target]
-                ), h(
+                this._modal = new Vue({
+                    el: '#modal',
+                    render: function render(h) {
+                        return ctx._renderEl();
+                    }
+                });
+            },
+            _renderPopover: function _renderPopover() {
+                var h = this.$createElement;
+
+                var style = {
+                    top: 'auto',
+                    left: 'auto'
+                };
+
+                return h(
                     'transition',
                     {
                         attrs: { name: 'fade' }
@@ -2370,7 +2876,40 @@
                             [this.$slots.default]
                         )]
                     )]
-                )]
+                );
+            }
+        },
+        render: function render(h) {
+            var _this = this;
+
+            var on = {};
+
+            switch (this.event) {
+                case 'click':
+                    on.click = function (ev) {
+                        ev.preventDefault();
+                        _this.visible = !_this.visible;
+                    };
+                    break;
+                case 'hover':
+                    on.mouseenter = function () {
+                        return _this.visible = true;
+                    };
+                    on.mouseleave = function () {
+                        return _this.visible = false;
+                    };
+                    on.click = function (ev) {
+                        return ev.preventDefault();
+                    };
+                    break;
+            }
+
+            return h(
+                'a',
+                _mergeJSXProps([{
+                    attrs: { href: '#' }
+                }, { on: on }]),
+                [this.$slots.target || this.target]
             );
         }
     };

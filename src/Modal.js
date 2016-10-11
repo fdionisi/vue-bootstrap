@@ -1,3 +1,4 @@
+import Vue from 'vue'
 import { emitEvent } from './misc/utilities'
 
 const ModalHeader = {
@@ -48,6 +49,10 @@ const ModalFooter = {
 export default {
     name: 'modal',
     props: {
+        id: {
+            type: String,
+            required: true
+        },
         container: Object,
         dismissible: {
             type: Boolean,
@@ -64,7 +69,8 @@ export default {
     },
     data() {
         return {
-            visible: false
+            visible: false,
+            modalVisible: false
         }
     },
     created() {
@@ -90,6 +96,38 @@ export default {
         })
     },
     methods: {
+        _ejectModal() {
+            if (this.$isServer || !this._modal) return
+
+            this.modalVisible = false
+
+            this.$nextTick(() => {
+                this._modal.$destroy()
+                document.body.removeChild(
+                    document.querySelector(`#${this.id}`)
+                )
+
+                delete this._modal
+            })
+        },
+        _injectModal() {
+            if (this.$isServer || this._modal) return
+
+            const ctx = this
+
+            const injectDiv = () => document.body.appendChild(
+                document.createElement('div')
+            )
+
+            this._modal = new Vue({
+                el: injectDiv(),
+                render: (h) => ctx._renderEl()
+            })
+
+            this.$nextTick(() => {
+                this.modalVisible = true
+            })
+        },
         _renderBackdrop() {
             const h = this.$createElement
 
@@ -100,11 +138,8 @@ export default {
         _renderModal() {
             const h = this.$createElement
 
-            return <transition
-                name="fade"
-                on-afterEnter={emitEvent('showed', this)}
-                on-afterLeave={emitEvent('hidden', this)}>
-                <div class="modal" on-click={emitEvent('hide', this)} style="display: block">
+            return <transition name="fade">
+                this.modalVisible && <div class="modal" on-click={emitEvent('hide', this)} style="display: block">
                     <div on-click={(ev) => ev.stopImmediatePropagation()} class="modal-dialog" role="document">
                         <div class="modal-content">
                             { this.$slots.header && <ModalHeader context={this}>{ this.$slots.header }</ModalHeader> }
@@ -118,13 +153,20 @@ export default {
                     </div>
                 </div>
             </transition>
+        },
+        _renderEl() {
+            const h = this.$createElement
+
+            return <div id={this.id}>{ [ this._renderModal(), this._renderBackdrop() ] }</div>
+        }
+    },
+    watch: {
+        visible(val) {
+            if (val) this._injectModal()
+            else this._ejectModal()
         }
     },
     render(h) {
-        return this.visible
-        ? <div>
-            { [ this._renderModal(), this._renderBackdrop() ] }
-        </div>
-        : null
+        return null
     }
 }

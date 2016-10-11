@@ -11,6 +11,7 @@ export default {
             type: Boolean,
             default: false
         },
+        statusMessage: String,
         note: String,
         title: String,
         row: null
@@ -23,10 +24,8 @@ export default {
     computed: {
         className() {
             return {
-                'form-control': this.type !== 'static',
-                'form-control-static': this.type === 'static',
-                [`form-control-${this.status}`]: this.status,
-                [`form-control-${this.size}`]: this.size !== 'md'
+                'form-group': this.type !== 'static',
+                [`has-${this.status}`]: this.status
             }
         }
     },
@@ -138,10 +137,12 @@ export default {
     },
     render(h) {
         // return generated element
-        return <fieldset class="form-group">
+        return <fieldset class={this.className}>
             { this.title && this._renderTitle() }
 
             { this.row ? this._renderRowElement() : this._renderElement() }
+
+            { this.status && this.statusMessage && <div class="form-control-feedback">{ this.statusMessage }</div> }
 
             { this.note && this._renderNote() }
         </fieldset>
