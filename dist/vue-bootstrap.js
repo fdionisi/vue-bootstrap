@@ -814,7 +814,7 @@
             return h(
                 'li',
                 { 'class': className },
-                [props.isLast && h(
+                [!props.isLast && h(
                     'a',
                     {
                         on: {
@@ -823,7 +823,7 @@
                         attrs: { href: props.href || '#' }
                     },
                     [props.text]
-                ), !props.isLast && props.text]
+                ), props.isLast && props.text]
             );
         }
     };

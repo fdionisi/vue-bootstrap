@@ -28,7 +28,7 @@ const Crumb = {
                 { !props.isLast &&
                     <a on-click={props.clicked} href={props.href || '#'}>{ props.text }</a>
                 }
-                
+
                 { props.isLast && props.text }
             </li>
         )
