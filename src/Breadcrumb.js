@@ -25,11 +25,11 @@ const Crumb = {
 
         return(
             <li class={className}>
-                { props.isLast &&
+                { !props.isLast &&
                     <a on-click={props.clicked} href={props.href || '#'}>{ props.text }</a>
                 }
                 
-                { !props.isLast && props.text }
+                { props.isLast && props.text }
             </li>
         )
     }
