@@ -507,6 +507,119 @@
 
     interopDefault(position);
 
+    var asyncGenerator = function () {
+      function AwaitValue(value) {
+        this.value = value;
+      }
+
+      function AsyncGenerator(gen) {
+        var front, back;
+
+        function send(key, arg) {
+          return new Promise(function (resolve, reject) {
+            var request = {
+              key: key,
+              arg: arg,
+              resolve: resolve,
+              reject: reject,
+              next: null
+            };
+
+            if (back) {
+              back = back.next = request;
+            } else {
+              front = back = request;
+              resume(key, arg);
+            }
+          });
+        }
+
+        function resume(key, arg) {
+          try {
+            var result = gen[key](arg);
+            var value = result.value;
+
+            if (value instanceof AwaitValue) {
+              Promise.resolve(value.value).then(function (arg) {
+                resume("next", arg);
+              }, function (arg) {
+                resume("throw", arg);
+              });
+            } else {
+              settle(result.done ? "return" : "normal", result.value);
+            }
+          } catch (err) {
+            settle("throw", err);
+          }
+        }
+
+        function settle(type, value) {
+          switch (type) {
+            case "return":
+              front.resolve({
+                value: value,
+                done: true
+              });
+              break;
+
+            case "throw":
+              front.reject(value);
+              break;
+
+            default:
+              front.resolve({
+                value: value,
+                done: false
+              });
+              break;
+          }
+
+          front = front.next;
+
+          if (front) {
+            resume(front.key, front.arg);
+          } else {
+            back = null;
+          }
+        }
+
+        this._invoke = send;
+
+        if (typeof gen.return !== "function") {
+          this.return = undefined;
+        }
+      }
+
+      if (typeof Symbol === "function" && Symbol.asyncIterator) {
+        AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
+          return this;
+        };
+      }
+
+      AsyncGenerator.prototype.next = function (arg) {
+        return this._invoke("next", arg);
+      };
+
+      AsyncGenerator.prototype.throw = function (arg) {
+        return this._invoke("throw", arg);
+      };
+
+      AsyncGenerator.prototype.return = function (arg) {
+        return this._invoke("return", arg);
+      };
+
+      return {
+        wrap: function (fn) {
+          return function () {
+            return new AsyncGenerator(fn.apply(this, arguments));
+          };
+        },
+        await: function (value) {
+          return new AwaitValue(value);
+        }
+      };
+    }();
+
     var defineProperty = function (obj, key, value) {
       if (key in obj) {
         Object.defineProperty(obj, key, {
@@ -547,8 +660,8 @@
     };
 
     var colsClass = function colsClass() {
-        var ctx = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-        var opposite = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+        var ctx = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+        var opposite = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
         return DEVICE_SIZES.reduce(function (classes, size) {
             var popProp = function popProp(propSuffix, modifier) {
@@ -616,7 +729,7 @@
                 'button',
                 {
                     on: {
-                        click: props.clicked
+                        'click': props.clicked
                     },
                     attrs: {
                         'aria-label': props.label,
@@ -628,7 +741,7 @@
                     {
                         attrs: { 'aria-hidden': 'true' }
                     },
-                    ['×']
+                    ['\xD7']
                 )]
             );
         }
@@ -701,16 +814,16 @@
             return h(
                 'li',
                 { 'class': className },
-                [h(
+                [props.isLast && h(
                     'a',
                     {
                         on: {
-                            click: props.clicked
+                            'click': props.clicked
                         },
                         attrs: { href: props.href || '#' }
                     },
                     [props.text]
-                )]
+                ), !props.isLast && props.text]
             );
         }
     };
@@ -756,11 +869,23 @@
 
     module.exports = function mergeJSXProps(objs) {
       return objs.reduce(function (a, b) {
-        var aa, bb, key, nestedKey;
+        var aa, bb, key, nestedKey, temp;
         for (key in b) {
           aa = a[key];
           bb = b[key];
           if (aa && nestRE.test(key)) {
+            if (key === 'class') {
+              if (typeof aa === 'string') {
+                temp = aa;
+                a[key] = aa = {};
+                aa[temp] = true;
+              }
+              if (typeof bb === 'string') {
+                temp = bb;
+                b[key] = bb = {};
+                bb[temp] = true;
+              }
+            }
             if (key === 'on' || key === 'nativeOn' || key === 'hook') {
               for (nestedKey in bb) {
                 aa[nestedKey] = mergeFn(aa[nestedKey], bb[nestedKey]);
@@ -854,7 +979,7 @@
                 Component,
                 _mergeJSXProps([{
                     on: {
-                        click: this.clicked
+                        'click': this.clicked
                     },
                     'class': this.className }, { attrs: attrs }]),
                 [this.$slots.default, this.text]
@@ -878,7 +1003,7 @@
     };
 
     var findParent = function findParent(target) {
-        var el = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+        var el = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
         return target === el ? true : !!el.parentElement && findParent(target, el.parentElement);
     };
 
@@ -1096,7 +1221,7 @@
                     Btn,
                     {
                         on: {
-                            click: this.btnClick
+                            'click': this.btnClick
                         },
                         attrs: {
                             variant: this.variant,
@@ -1116,7 +1241,7 @@
                     Btn,
                     {
                         on: {
-                            click: event
+                            'click': event
                         },
 
                         'class': 'dropdown-toggle',
@@ -1137,8 +1262,8 @@
                     {
                         ref: 'dropdown',
                         on: {
-                            show: this._show,
-                            hide: this._hide
+                            'show': this._show,
+                            'hide': this._hide
                         },
                         attrs: {
                             options: this.options,
@@ -1266,9 +1391,9 @@
                 }, defineProperty(_ref, 'btn-' + this.size, this.size !== 'md'), defineProperty(_ref, 'btn-' + (option.variant || this.variant), true), _ref;
             },
             _renderDropdown: function _renderDropdown(h, _ref2) {
-                var title = _ref2.title;
-                var text = _ref2.text;
-                var options = _ref2.options;
+                var title = _ref2.title,
+                    text = _ref2.text,
+                    options = _ref2.options;
 
                 return h(
                     BtnDropdown,
@@ -1284,14 +1409,14 @@
                 );
             },
             _renderButton: function _renderButton(h, button) {
-                var _button$type = button.type;
-                var type = _button$type === undefined ? 'button' : _button$type;
-                var _button$text = button.text;
-                var text = _button$text === undefined ? '' : _button$text;
-                var active = button.active;
-                var disabled = button.disabled;
-                var size = button.size;
-                var variant = button.variant;
+                var _button$type = button.type,
+                    type = _button$type === undefined ? 'button' : _button$type,
+                    _button$text = button.text,
+                    text = _button$text === undefined ? '' : _button$text,
+                    active = button.active,
+                    disabled = button.disabled,
+                    size = button.size,
+                    variant = button.variant;
 
                 size = size || this.size;
 
@@ -1307,7 +1432,7 @@
                             variant: variant },
                         'class': button.class,
                         on: {
-                            click: this.trigger
+                            'click': this.trigger
                         }
                     },
                     [text]
@@ -1361,7 +1486,7 @@
                         Btn,
                         _mergeJSXProps([{
                             on: {
-                                click: _this._updateValue
+                                'click': _this._updateValue
                             }
                         }, { props: props }]),
                         []
@@ -1411,7 +1536,7 @@
                         Btn,
                         _mergeJSXProps([{
                             on: {
-                                click: _this2._updateValue
+                                'click': _this2._updateValue
                             }
                         }, { props: props }]),
                         []
@@ -1464,10 +1589,10 @@
             var _this = this;
 
             var children = this.groups.map(function (_ref2) {
-                var name = _ref2.name;
-                var callback = _ref2.callback;
-                var disabled = _ref2.disabled;
-                var options = _ref2.options;
+                var name = _ref2.name,
+                    callback = _ref2.callback,
+                    disabled = _ref2.disabled,
+                    options = _ref2.options;
                 return h(
                     BtnGroup,
                     {
@@ -1532,7 +1657,7 @@
                         "li",
                         {
                             on: {
-                                click: _this.slideTo(index)
+                                "click": _this.slideTo(index)
                             },
                             "class": _this.position === index && 'active' },
                         []
@@ -1608,7 +1733,7 @@
                         attrs: { href: "#"
                         },
                         on: {
-                            click: this.slidePosition(direction)
+                            "click": this.slidePosition(direction)
                         }
                     },
                     [h(
@@ -1680,8 +1805,8 @@
             lgPull: Number
         },
         render: function render(h, _ref) {
-            var children = _ref.children;
-            var props = _ref.props;
+            var children = _ref.children,
+                props = _ref.props;
 
             var Component = props.tag;
 
@@ -1713,8 +1838,8 @@
                 {
                     'class': className,
                     on: {
-                        submit: emitEvent('submit', this),
-                        reset: emitEvent('reset', this)
+                        'submit': emitEvent('submit', this),
+                        'reset': emitEvent('reset', this)
                     }
                 },
                 [this.$slots.default]
@@ -1779,7 +1904,7 @@
                     'p',
                     {
                         on: {
-                            click: emitEvent('click', this)
+                            'click': emitEvent('click', this)
                         },
                         'class': this.className },
                     [this.placeholder]
@@ -1793,12 +1918,12 @@
                     {
                         'class': this.className,
                         on: {
-                            click: this._updateAndEmit('click'),
-                            blur: this._updateAndEmit('blur'),
-                            focus: this._updateAndEmit('focus'),
-                            keydown: this._updateAndEmit('keydown'),
-                            keypress: this._updateAndEmit('keypress'),
-                            keyup: this._updateAndEmit('keyup')
+                            'click': this._updateAndEmit('click'),
+                            'blur': this._updateAndEmit('blur'),
+                            'focus': this._updateAndEmit('focus'),
+                            'keydown': this._updateAndEmit('keydown'),
+                            'keypress': this._updateAndEmit('keypress'),
+                            'keyup': this._updateAndEmit('keyup')
                         },
                         attrs: {
                             type: this.type,
@@ -1819,9 +1944,9 @@
                     'select',
                     {
                         on: {
-                            click: this._updateAndEmit('click'),
-                            change: this._updateAndEmit('change'),
-                            select: this._updateAndEmit('select')
+                            'click': this._updateAndEmit('click'),
+                            'change': this._updateAndEmit('change'),
+                            'select': this._updateAndEmit('select')
                         },
                         attrs: {
                             id: this.id,
@@ -1833,8 +1958,8 @@
                 );
             },
             _renderOption: function _renderOption(_ref2) {
-                var text = _ref2.text;
-                var value = _ref2.value;
+                var text = _ref2.text,
+                    value = _ref2.value;
 
                 var h = this.$createElement;
 
@@ -1842,7 +1967,7 @@
                     'option',
                     {
                         on: {
-                            click: this._updateAndEmit('click')
+                            'click': this._updateAndEmit('click')
                         },
                         attrs: { value: value }
                     },
@@ -1856,12 +1981,12 @@
                     'textarea',
                     {
                         on: {
-                            click: this._updateAndEmit('click'),
-                            blur: this._updateAndEmit('blur'),
-                            focus: this._updateAndEmit('focus'),
-                            keydown: this._updateAndEmit('keydown'),
-                            keypress: this._updateAndEmit('keypress'),
-                            keyup: this._updateAndEmit('keyup')
+                            'click': this._updateAndEmit('click'),
+                            'blur': this._updateAndEmit('blur'),
+                            'focus': this._updateAndEmit('focus'),
+                            'keydown': this._updateAndEmit('keydown'),
+                            'keypress': this._updateAndEmit('keypress'),
+                            'keyup': this._updateAndEmit('keyup')
                         },
                         attrs: {
                             id: this.id,
@@ -2024,7 +2149,7 @@
                                 'input',
                                 {
                                     on: {
-                                        click: onClick
+                                        'click': onClick
                                     },
 
                                     'class': _this.formCheck ? 'form-check-input' : '',
@@ -2155,8 +2280,8 @@
             }
         },
         render: function render(h, _ref) {
-            var props = _ref.props;
-            var children = _ref.children;
+            var props = _ref.props,
+                children = _ref.children;
 
             var Component = props.tag;
 
@@ -2193,7 +2318,7 @@
                     attrs: { 'data-value': item.value
                     },
                     on: {
-                        click: ctx.emitClick
+                        'click': ctx.emitClick
                     }
                 },
                 [item.heading && h(
@@ -2227,10 +2352,10 @@
         },
         methods: {
             emitClick: function emitClick(ev) {
-                var _ev$target = ev.target;
-                var target = _ev$target === undefined ? {} : _ev$target;
-                var _target$dataset = target.dataset;
-                var dataset = _target$dataset === undefined ? {} : _target$dataset;
+                var _ev$target = ev.target,
+                    target = _ev$target === undefined ? {} : _ev$target;
+                var _target$dataset = target.dataset,
+                    dataset = _target$dataset === undefined ? {} : _target$dataset;
 
 
                 dataset.value && this.$emit('click', ev, dataset.value);
@@ -2251,8 +2376,8 @@
         name: 'modal-header',
         functional: true,
         render: function render(h, _ref) {
-            var props = _ref.props;
-            var children = _ref.children;
+            var props = _ref.props,
+                children = _ref.children;
             var context = props.context;
 
             var emitClose = function emitClose(ev) {
@@ -2271,7 +2396,7 @@
                             'aria-label': 'Close' },
                         'class': 'close',
                         on: {
-                            click: emitClose
+                            'click': emitClose
                         }
                     },
                     [h(
@@ -2279,7 +2404,7 @@
                         {
                             attrs: { 'aria-hidden': 'true' }
                         },
-                        ['×']
+                        ['\xD7']
                     )]
                 ), props.title && h(
                     'h4',
@@ -2393,73 +2518,72 @@
                     return document.body.appendChild(document.createElement('div'));
                 };
 
-                this._modal = new Vue({
-                    el: injectDiv(),
-                    render: function render(h) {
-                        return ctx._renderEl();
-                    }
-                });
+                this.modalVisible = true;
 
                 this.$nextTick(function () {
-                    _this3.modalVisible = true;
+                    _this3._modal = new Vue({
+                        render: function render(h) {
+                            return h(
+                                'div',
+                                null,
+                                [function () {
+                                    return ctx._renderModal();
+                                }, function () {
+                                    return ctx._renderBackdrop();
+                                }]
+                            );
+                        }
+                    });
+
+                    _this3._modal.$mount(injectDiv());
                 });
             },
             _renderBackdrop: function _renderBackdrop() {
                 var h = this.$createElement;
 
                 return h(
-                    'transition',
-                    null,
-                    [h(
-                        'div',
-                        { 'class': 'modal-backdrop fade in' },
-                        []
-                    )]
+                    'div',
+                    { 'class': 'modal-backdrop fade in' },
+                    []
                 );
             },
             _renderModal: function _renderModal() {
                 var h = this.$createElement;
 
                 return h(
-                    'transition',
-                    {
-                        attrs: { name: 'fade' }
-                    },
-                    ['this.modalVisible && ', h(
+                    'div',
+                    { 'class': 'modal in', on: {
+                            'click': emitEvent('hide', this)
+                        },
+                        style: 'display: block;' },
+                    [h(
                         'div',
-                        { 'class': 'modal', on: {
-                                click: emitEvent('hide', this)
+                        {
+                            on: {
+                                'click': function click(ev) {
+                                    return ev.stopImmediatePropagation();
+                                }
                             },
-                            style: 'display: block' },
+                            'class': 'modal-dialog', attrs: { role: 'document' }
+                        },
                         [h(
                             'div',
-                            {
-                                on: {
-                                    click: function click(ev) {
-                                        return ev.stopImmediatePropagation();
-                                    }
+                            { 'class': 'modal-content' },
+                            [this.$slots.header && h(
+                                ModalHeader,
+                                {
+                                    attrs: { context: this }
                                 },
-                                'class': 'modal-dialog', attrs: { role: 'document' }
-                            },
-                            [h(
-                                'div',
-                                { 'class': 'modal-content' },
-                                [this.$slots.header && h(
-                                    ModalHeader,
-                                    {
-                                        attrs: { context: this }
-                                    },
-                                    [this.$slots.header]
-                                ), this.$slots.body && h(
-                                    ModalBody,
-                                    null,
-                                    [this.$slots.body]
-                                ), this.$slots.footer && h(
-                                    ModalFooter,
-                                    null,
-                                    [this.$slots.footer]
-                                ), this.$slots.default]
-                            )]
+                                [this.$slots.header]
+                            ), this.$slots.body && h(
+                                ModalBody,
+                                null,
+                                [this.$slots.body]
+                            ), this.$slots.footer && h(
+                                ModalFooter,
+                                null,
+                                [this.$slots.footer]
+                            ), this.$slots.default]
                         )]
                     )]
                 );
@@ -2472,7 +2596,7 @@
                     {
                         attrs: { id: this.id }
                     },
-                    [[this._renderModal(), this._renderBackdrop()]]
+                    [this._renderModal(), this._renderBackdrop()]
                 );
             }
         },
@@ -2568,7 +2692,7 @@
                             href: this.href || '#'
                         },
                         on: {
-                            click: event
+                            'click': event
                         },
 
                         'class': className },
@@ -2583,7 +2707,7 @@
                             variant: this.variant,
                             size: this.size },
                         on: {
-                            click: emitEvent('click', this)
+                            'click': emitEvent('click', this)
                         }
                     },
                     []
@@ -2699,7 +2823,7 @@
                 [this.brand.text && h(
                     'a',
                     { 'class': 'navbar-brand', on: {
-                            click: emitEvent('brand-click', this)
+                            'click': emitEvent('brand-click', this)
                         },
                         attrs: { href: this.brand.href || '#' }
                     },
@@ -2748,7 +2872,7 @@
                             {
                                 attrs: { href: '#', 'data-page': i },
                                 'class': 'page-link', on: {
-                                    click: this._emitClick
+                                    'click': this._emitClick
                                 }
                             },
                             [i]
@@ -2979,8 +3103,8 @@
             }
         },
         render: function render(h, ctx) {
-            var props = ctx.props;
-            var children = ctx.children;
+            var props = ctx.props,
+                children = ctx.children;
 
 
             var className = defineProperty({

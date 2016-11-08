@@ -119,45 +119,50 @@ export default {
                 document.createElement('div')
             )
 
-            this._modal = new Vue({
-                el: injectDiv(),
-                render: (h) => ctx._renderEl()
-            })
+            this.modalVisible = true
 
             this.$nextTick(() => {
-                this.modalVisible = true
+                this._modal = new Vue({
+                    render: (h) => <div>
+                        { () => ctx._renderModal() }
+                        { () => ctx._renderBackdrop() }
+                    </div>
+                })
+
+                this._modal.$mount(injectDiv())
             })
         },
         _renderBackdrop() {
             const h = this.$createElement
 
-            return <transition>
-                <div class="modal-backdrop fade in"></div>
-            </transition>
+            return <div class="modal-backdrop fade in"></div>
         },
         _renderModal() {
             const h = this.$createElement
 
-            return <transition name="fade">
-                this.modalVisible && <div class="modal" on-click={emitEvent('hide', this)} style="display: block">
-                    <div on-click={(ev) => ev.stopImmediatePropagation()} class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            { this.$slots.header && <ModalHeader context={this}>{ this.$slots.header }</ModalHeader> }
+            return <div class="modal in" on-click={emitEvent('hide', this)} style="display: block;">
+                <div on-click={(ev) => ev.stopImmediatePropagation()} class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        { this.$slots.header && <ModalHeader context={this}>{ this.$slots.header }</ModalHeader> }
 
-                            { this.$slots.body && <ModalBody>{ this.$slots.body }</ModalBody> }
+                        { this.$slots.body && <ModalBody>{ this.$slots.body }</ModalBody> }
 
-                            { this.$slots.footer && <ModalFooter>{ this.$slots.footer }</ModalFooter> }
+                        { this.$slots.footer && <ModalFooter>{ this.$slots.footer }</ModalFooter> }
 
-                            { this.$slots.default }
-                        </div>
+                        { this.$slots.default }
                     </div>
                 </div>
-            </transition>
+            </div>
         },
         _renderEl() {
             const h = this.$createElement
 
-            return <div id={this.id}>{ [ this._renderModal(), this._renderBackdrop() ] }</div>
+            // return <div>
+            // </div>
+            return <div id={this.id}>
+                { this._renderModal() }
+                { this._renderBackdrop() }
+            </div>
         }
     },
     watch: {
