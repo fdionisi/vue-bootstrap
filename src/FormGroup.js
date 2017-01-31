@@ -120,7 +120,6 @@ export default {
                     value = copy
                 }
 
-                this.value = value
                 this.$nextTick(() => {
                     this._updateValue(value)
                     emitClick(value)
