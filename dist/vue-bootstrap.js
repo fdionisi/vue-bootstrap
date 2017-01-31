@@ -2143,7 +2143,22 @@
                 var onClick = function onClick(ev) {
                     var value = ev.target.value;
 
+
+                    if (_this.formCheck) {
+                        var copy = _this.value.slice();
+                        var pos = copy.indexOf(value);
+
+                        if (pos > -1) {
+                            copy.splice(pos, 1);
+                        } else {
+                            copy.push(value);
+                        }
+
+                        value = copy;
+                    }
+
                     _this._updateValue(value);
+
                     emitClick(value);
                 };
 
@@ -2180,7 +2195,9 @@
                 return _ref2 = {}, defineProperty(_ref2, this.type, !this.inline && !this.formCheck), defineProperty(_ref2, this.type + '-inline', this.inline && !this.formCheck), defineProperty(_ref2, 'form-check', this.formCheck && !this.inline), defineProperty(_ref2, 'form-check-inline', this.formCheck && this.inline), defineProperty(_ref2, 'disabled', option.disabled), _ref2;
             },
             _updateValue: function _updateValue(value) {
-                if (this.value === value) return;
+                if (this.value === value) {
+                    return;
+                }
 
                 this.$emit('input', value);
             }

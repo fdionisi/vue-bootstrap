@@ -104,8 +104,24 @@ export default {
 
             const emitClick = emitEvent('click', this)
             const onClick = (ev) => {
-                const { value } = ev.target
+                let { value } = ev.target
+
+                if (this.formCheck) {
+                    const copy = this.value.slice()
+                    const pos = copy.indexOf(value)
+
+                    if (pos > -1) {
+                        copy.splice(pos, 1)
+
+                    } else {
+                        copy.push(value)
+                    }
+
+                    value = copy
+                }
+
                 this._updateValue(value)
+
                 emitClick(value)
             }
 
@@ -136,7 +152,9 @@ export default {
             }
         },
         _updateValue(value) {
-            if (this.value === value) return
+            if (this.value === value) {
+                return
+            }
 
             this.$emit('input', value)
         }
