@@ -2041,6 +2041,15 @@
         },
 
         computed: {
+            formCheck: function formCheck() {
+                switch (this.type) {
+                    case 'radio':
+                    case 'checkbox':
+                        return true;
+                    default:
+                        return false;
+                }
+            },
             className: function className() {
                 return defineProperty({
                     'form-group': this.type !== 'static'
