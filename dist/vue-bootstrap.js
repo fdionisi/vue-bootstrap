@@ -1967,10 +1967,10 @@
                 return h(
                     'option',
                     {
+                        attrs: { selected: value === this.value, value: value },
                         on: {
                             'click': this._updateAndEmit('click')
-                        },
-                        attrs: { value: value }
+                        }
                     },
                     [text]
                 );

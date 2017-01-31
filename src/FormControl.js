@@ -90,7 +90,7 @@ export default {
         _renderOption({text, value}) {
             const h = this.$createElement
 
-            return <option on-click={this._updateAndEmit('click')} value={value}>{ text }</option>
+            return <option selected={value === this.value} on-click={this._updateAndEmit('click')} value={value}>{ text }</option>
         },
         _renderTextarea() {
             const h = this.$createElement
