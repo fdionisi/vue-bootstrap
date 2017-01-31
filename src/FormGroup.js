@@ -112,7 +112,7 @@ export default {
                             name={this.id}
                             id={option.id}
                             value={option.value}
-                            checkbox={option.value === this.value} />
+                            checkbox={this.formCheck ? this.value.includes(option.value) : (option.value === this.value)} />
 
                         { option.text }
                     </label>
