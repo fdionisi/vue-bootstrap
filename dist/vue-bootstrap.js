@@ -2157,7 +2157,7 @@
                                         name: _this.id,
                                         id: option.id,
                                         value: option.value,
-                                        checkbox: option.value === _this.value }
+                                        checkbox: _this.formCheck ? _this.value.includes(option.value) : option.value === _this.value }
                                 },
                                 []
                             ), option.text]
