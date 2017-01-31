@@ -21,6 +21,13 @@ export default {
         }
     },
     computed: {
+        formCheck() {
+            switch (this.type) {
+                case 'radio':
+                case 'checkbox': return true
+                default: return false
+            }
+        },
         className() {
             return {
                 'form-group': this.type !== 'static',
