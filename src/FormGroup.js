@@ -6,7 +6,6 @@ export default {
     name: 'form-group',
     props: {
         ...FormControl.props,
-        id: String,
         inline: {
             type: Boolean,
             default: false

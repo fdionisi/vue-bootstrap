@@ -4,6 +4,7 @@ import { inEnum } from './misc/validators'
 export default {
     name: 'form-control',
     props: {
+        id: String,
         placeholder: String,
         multiple: {
             type: Boolean,

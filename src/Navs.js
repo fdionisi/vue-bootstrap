@@ -49,6 +49,7 @@ export default {
             {
                 this.list.map((item) =>
                     <NavItem
+                        tag={item.tag}
                         disabled={item.disabled}
                         dropdown={item.dropdown}
                         options={item.options || []}>

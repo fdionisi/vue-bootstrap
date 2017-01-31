@@ -1,6 +1,6 @@
 /*!
  * VueBootstrap.js v0.1.0
- * (c) 2016-2016 Federico Dionisi
+ * (c) 2016-2017 Federico Dionisi
  * Released under the MIT License.
  */
 (function (global, factory) {
@@ -1850,6 +1850,7 @@
     var FormControl = {
         name: 'form-control',
         props: {
+            id: String,
             placeholder: String,
             multiple: {
                 type: Boolean,
@@ -2024,7 +2025,6 @@
     var FormGroup = {
         name: 'form-group',
         props: _extends({}, FormControl.props, {
-            id: String,
             inline: {
                 type: Boolean,
                 default: false
@@ -2769,6 +2769,7 @@
                         NavItem,
                         {
                             attrs: {
+                                tag: item.tag,
                                 disabled: item.disabled,
                                 dropdown: item.dropdown,
                                 options: item.options || [] }
@@ -2833,7 +2834,7 @@
                     { 'class': 'navbar-nav', attrs: { list: this.list }
                     },
                     []
-                ), this.$slots.default]
+                ) || '', this.$slots.default]
             );
         }
     };

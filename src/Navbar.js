@@ -38,7 +38,7 @@ export default {
         return <nav class={className}>
             { this.brand.text && <a class="navbar-brand" on-click={emitEvent('brand-click', this)} href={this.brand.href || '#'}>{ this.brand.text }</a> }
 
-            { this.list.length && <Navs class="navbar-nav" list={this.list}/> }
+            { this.list.length && <Navs class="navbar-nav" list={this.list}/> || '' }
 
             { this.$slots.default }
         </nav>
