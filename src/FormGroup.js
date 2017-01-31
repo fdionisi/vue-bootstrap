@@ -120,9 +120,11 @@ export default {
                     value = copy
                 }
 
-                this._updateValue(value)
-
-                emitClick(value)
+                this.value = value
+                this.$nextTick(() => {
+                    this._updateValue(value)
+                    emitClick(value)
+                })
             }
 
             return this.options.map((option) => (

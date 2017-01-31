@@ -2156,10 +2156,12 @@
 
                         value = copy;
                     }
+                    _this.value = value;
+                    _this.$nextTick(function () {
+                        _this._updateValue(value);
 
-                    _this._updateValue(value);
-
-                    emitClick(value);
+                        emitClick(value);
+                    });
                 };
 
                 return this.options.map(function (option) {
